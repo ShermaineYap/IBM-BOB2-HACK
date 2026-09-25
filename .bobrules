@@ -1,0 +1,16 @@
+# .bobrules — IBM Bob 2.0 Team Guidelines
+
+[General]
+enforce_documentation = true
+auto_generate_tests = true
+commit_message_format = "conventional"
+
+[Security]
+audit_framework = "OWASP ASVS v4.0"
+actor_critic_enabled = true
+block_hardcoded_secrets = true
+
+[CodeStyle]
+js_standard = "ES2024"
+css_theme = "Carbon Dark (#161616)"
+max_function_complexity = 10
