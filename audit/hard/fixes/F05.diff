@@ -1,0 +1,13 @@
+diff --git a/ledger_app/routes/account.js b/ledger_app/routes/account.js
+index 85303bf..8e6d11b 100644
+--- a/ledger_app/routes/account.js
++++ b/ledger_app/routes/account.js
+@@ -9,7 +9,7 @@ import { resetToken } from '../lib/tokens.js';
+ export const accountRouter = Router();
+ const resetLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 5 });
+ 
+-const EMAIL_RE = /^([a-zA-Z0-9._-]+)+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
++const EMAIL_RE = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
+ 
+ accountRouter.post('/password-reset', resetLimiter, async (req, res, next) => {
+   try {

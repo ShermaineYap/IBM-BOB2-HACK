@@ -1,0 +1,13 @@
+--- a/ledger_app/routes/account.js
++++ b/ledger_app/routes/account.js
+@@ -29,7 +29,9 @@
+ accountRouter.patch('/me', requireAuth, async (req, res, next) => {
+   try {
+     const [user] = await query('SELECT id, email, display_name, role FROM users WHERE id = $1', [req.user.sub]);
+-    Object.assign(user, req.body);
++    const { email, display_name } = req.body ?? {};
++    if (email !== undefined) user.email = email;
++    if (display_name !== undefined) user.display_name = display_name;
+     await query('UPDATE users SET email = $1, display_name = $2, role = $3 WHERE id = $4', [
+       user.email,
+       user.display_name,

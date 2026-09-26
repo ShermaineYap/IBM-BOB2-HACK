@@ -1,0 +1,11 @@
+--- a/ledger_app/lib/tokens.js
++++ b/ledger_app/lib/tokens.js
+@@ -1,7 +1,7 @@
+ import crypto from 'node:crypto';
+ 
+ export function resetToken() {
+-  return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
++  return crypto.randomBytes(32).toString('hex');
+ }
+ 
+ export function requestId() {

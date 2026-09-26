@@ -1,0 +1,15 @@
+--- a/ledger_app/routes/files.js
++++ b/ledger_app/routes/files.js
+@@ -8,7 +8,11 @@ export const filesRouter = Router();
+ filesRouter.use(requireAuth);
+ 
+ filesRouter.get('/download/:name', (req, res) => {
+-  const filePath = path.join(config.uploadDir, req.params.name);
++  const safeName = path.basename(req.params.name);
++  const filePath = path.resolve(config.uploadDir, safeName);
++  if (!filePath.startsWith(path.resolve(config.uploadDir) + path.sep)) {
++    return res.status(400).json({ error: 'bad name' });
++  }
+   return res.sendFile(filePath);
+ });
+ 

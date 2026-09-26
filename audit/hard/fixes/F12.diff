@@ -1,0 +1,11 @@
+--- a/ledger_app/services/thumbnails.js
++++ b/ledger_app/services/thumbnails.js
+@@ -6,7 +6,7 @@ import { config } from '../config.js';
+ // Generates a preview image for an uploaded file.
+ export function makeThumbnail(fileName) {
+   return new Promise((resolve, reject) => {
+     const src = path.join(config.uploadDir, fileName);
+-    exec(`convert "${src}" -resize 200x200 "${src}.thumb.png"`, (err) => (err ? reject(err) : resolve()));
++    execFile('convert', [src, '-resize', '200x200', `${src}.thumb.png`], (err) => (err ? reject(err) : resolve()));
+   });
+ }

@@ -1,0 +1,13 @@
+diff --git a/ledger_app/routes/invoices.js b/ledger_app/routes/invoices.js
+index 91dcbc3..3115d86 100644
+--- a/ledger_app/routes/invoices.js
++++ b/ledger_app/routes/invoices.js
+@@ -21,7 +21,7 @@ invoicesRouter.get('/', async (req, res, next) => {
+ 
+ invoicesRouter.get('/:id', async (req, res, next) => {
+   try {
+-    const [invoice] = await query('SELECT * FROM invoices WHERE id = $1', [req.params.id]);
++    const [invoice] = await query('SELECT * FROM invoices WHERE id = $1 AND owner_id = $2', [req.params.id, req.user.sub]);
+     if (!invoice) return res.status(404).json({ error: 'not found' });
+     return res.json(invoice);
+   } catch (err) {

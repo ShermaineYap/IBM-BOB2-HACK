@@ -1,0 +1,12 @@
+--- a/ledger_app/routes/account.js
++++ b/ledger_app/routes/account.js
+@@ -55,7 +55,8 @@
+ 
+ accountRouter.get('/login/callback', (req, res) => {
+   const next = String(req.query.next ?? '/');
+-  return res.redirect(next);
++  const safe = next.startsWith('/') && !next.startsWith('//') ? next : '/';
++  return res.redirect(safe);
+ });
+ 
+ accountRouter.get('/logout', (req, res) => {

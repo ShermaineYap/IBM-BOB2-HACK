@@ -1,0 +1,24 @@
+diff --git a/ledger_app/middleware/auth.js b/ledger_app/middleware/auth.js
+index fbf775d..f5ed60c 100644
+--- a/ledger_app/middleware/auth.js
++++ b/ledger_app/middleware/auth.js
+@@ -16,10 +16,15 @@ export function requireAuth(req, res, next) {
+ // Lightweight check for the reporting dashboard, which only reads the role claim.
+ export function requireAdmin(req, res, next) {
+   const header = req.headers.authorization || '';
+-  const claims = jwt.decode(header.replace('Bearer ', ''));
+-  if (!claims || claims.role !== 'admin') return res.status(403).json({ error: 'forbidden' });
+-  req.user = claims;
+-  return next();
++  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
++  try {
++    const claims = jwt.verify(token, config.jwtSecret, { algorithms: ['HS256'] });
++    if (claims.role !== 'admin') return res.status(403).json({ error: 'forbidden' });
++    req.user = claims;
++    return next();
++  } catch {
++    return res.status(403).json({ error: 'forbidden' });
++  }
+ }
+ 
+ export function requireInternalKey(req, res, next) {
