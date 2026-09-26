@@ -23,7 +23,7 @@
       "bobcoins": 1.09,
       "context": "38.0k / 270k",
       "wall_clock_minutes": 4,
-      "outcome": "10 diffs in audit/fixes/ \u2014 only 2 passed git apply --check",
+      "outcome": "10 diffs in audit/fixes/ — only 2 passed git apply --check",
       "screenshot": "devpulse_task02_generate_fixes_summary.png"
     },
     {
@@ -37,6 +37,18 @@
       "context": "36.6k / 270k",
       "outcome": "Stopped by operator: subagents failed to reconstruct hunks. Headers regenerated mechanically with git diff --no-index over Bob's own edits; fix content unchanged. Lesson fed back into the generate-fixes skill as a mandatory verify step.",
       "screenshot": "devpulse_task03_diff_repair_attempt_summary.png"
+    },
+    {
+      "task": "04",
+      "round": 2,
+      "title": "Hard-mode security audit of ledger_app/",
+      "mode": "🛡️ Security Auditor (custom)",
+      "skill": "security-audit",
+      "subagents": "6 explore, in parallel",
+      "bobcoins": 1.01,
+      "context": "39.7k / 270k",
+      "outcome": "12 findings — 12/12 seeded defects, 0 false positives, 0/7 decoys flagged",
+      "screenshot": "devpulse_task04_hard_mode_audit_summary.png"
     }
   ],
   "verification": [
