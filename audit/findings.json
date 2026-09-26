@@ -2,11 +2,140 @@
   "run": {
     "tool": "IBM Bob 2.0",
     "mode": "agent",
-    "date": "",
+    "date": "2026-09-26T08:40:52Z",
     "target": "sample_app/",
-    "subagents": [],
-    "task_session_screenshot": "",
-    "notes": "PENDING — Bob has not audited sample_app/ yet. Run the security-audit skill in Bob IDE to populate this file."
+    "subagents": [
+      "explore:config.js",
+      "explore:db.js",
+      "explore:server.js",
+      "explore:middleware/auth.js",
+      "explore:routes/auth.js",
+      "explore:routes/users.js",
+      "explore:services/user.js"
+    ],
+    "task_session_screenshot": "bob_sessions/devpulse_task01_security_audit_summary.png",
+    "notes": "7 files scanned; db.js had no findings."
   },
-  "findings": []
+  "findings": [
+    {
+      "id": "F01",
+      "category": "hardcoded-secret",
+      "asvs": "V6.4.1",
+      "severity": "high",
+      "file": "sample_app/config.js",
+      "line": 6,
+      "title": "JWT signing key hardcoded as literal string in config",
+      "evidence": "  jwtSecret: 'shoply-prod-secret-2024-do-not-share',",
+      "explanation": "The production JWT signing secret is committed directly in source code. An attacker with repository access can forge arbitrary session tokens and impersonate any user.",
+      "status": "open"
+    },
+    {
+      "id": "F02",
+      "category": "session-ttl",
+      "asvs": "V3.3.2",
+      "severity": "low",
+      "file": "sample_app/config.js",
+      "line": 7,
+      "title": "Session token lifetime set to 30 days",
+      "evidence": "  tokenTtlSeconds: 60 * 60 * 24 * 30,",
+      "explanation": "Tokens remain valid for 30 days with no refresh or revocation mechanism. A stolen token gives an attacker a month-long window of access.",
+      "status": "open"
+    },
+    {
+      "id": "F03",
+      "category": "weak-password-policy",
+      "asvs": "V2.1.1",
+      "severity": "medium",
+      "file": "sample_app/services/user.js",
+      "line": 5,
+      "title": "Password minimum length is only 6 characters",
+      "evidence": "  return typeof password === 'string' && password.length > 6;",
+      "explanation": "Passwords of 7 characters are accepted; the ASVS minimum is 12. Short passwords are easily cracked by brute force or dictionary attacks.",
+      "status": "open"
+    },
+    {
+      "id": "F04",
+      "category": "weak-hashing",
+      "asvs": "V2.4.1",
+      "severity": "high",
+      "file": "sample_app/services/user.js",
+      "line": 9,
+      "title": "Passwords hashed with MD5 (unsalted)",
+      "evidence": "  return crypto.createHash('md5').update(password).digest('hex');",
+      "explanation": "MD5 is cryptographically broken and produces no per-user salt. An attacker who obtains the database can crack all passwords in seconds using rainbow tables or GPU-accelerated hash attacks.",
+      "status": "open"
+    },
+    {
+      "id": "F05",
+      "category": "sqli",
+      "asvs": "V5.3.4",
+      "severity": "high",
+      "file": "sample_app/services/user.js",
+      "line": 29,
+      "title": "SQL injection via string concatenation in searchByName",
+      "evidence": "  return all(\"SELECT id, email, display_name FROM users WHERE display_name LIKE '%\" + term + \"%'\");",
+      "explanation": "The caller-supplied search term is concatenated directly into SQL. An attacker can escape the LIKE clause and execute arbitrary SQL, extracting or modifying the entire database.",
+      "status": "open"
+    },
+    {
+      "id": "F06",
+      "category": "sqli",
+      "asvs": "V5.3.4",
+      "severity": "high",
+      "file": "sample_app/routes/auth.js",
+      "line": 29,
+      "title": "SQL injection via string concatenation in login query",
+      "evidence": "      \"SELECT * FROM users WHERE email = '\" + email + \"' AND password = '\" + hashed + \"'\"",
+      "explanation": "The email field from the request body is concatenated directly into SQL. An attacker can inject SQL to bypass authentication entirely and log in as any user.",
+      "status": "open"
+    },
+    {
+      "id": "F07",
+      "category": "missing-rate-limit",
+      "asvs": "V2.2.1",
+      "severity": "medium",
+      "file": "sample_app/routes/auth.js",
+      "line": 24,
+      "title": "Login endpoint has no rate limiting or lockout",
+      "evidence": "authRouter.post('/login', async (req, res, next) => {",
+      "explanation": "There is no throttle, lockout, or delay on POST /auth/login. An attacker can make unlimited password guessing attempts against any account.",
+      "status": "open"
+    },
+    {
+      "id": "F08",
+      "category": "xss",
+      "asvs": "V5.3.3",
+      "severity": "high",
+      "file": "sample_app/routes/users.js",
+      "line": 14,
+      "title": "Reflected XSS: search term interpolated into HTML response",
+      "evidence": "      `<h1>Results for ${term}</h1>` +",
+      "explanation": "The req.query.q value is interpolated directly into an HTML response without encoding. An attacker can craft a URL that executes arbitrary JavaScript in a victim's browser, stealing session tokens or performing actions on their behalf.",
+      "status": "open"
+    },
+    {
+      "id": "F09",
+      "category": "missing-authz",
+      "asvs": "V4.1.3",
+      "severity": "high",
+      "file": "sample_app/routes/users.js",
+      "line": 34,
+      "title": "Admin /users endpoint accessible with no authentication or role check",
+      "evidence": "adminRouter.get('/users', async (req, res, next) => {",
+      "explanation": "The GET /admin/users route returns all user records including admin flags without verifying a token or role. Any unauthenticated attacker can enumerate every account in the system.",
+      "status": "open"
+    },
+    {
+      "id": "F10",
+      "category": "info-leak",
+      "asvs": "V7.4.1",
+      "severity": "medium",
+      "file": "sample_app/server.js",
+      "line": 15,
+      "title": "Global error handler returns stack trace to clients",
+      "evidence": "  res.status(500).json({ error: err.message, stack: err.stack });",
+      "explanation": "Full stack traces including internal file paths are sent in every 500 response. An attacker can use this information to map the application's internal structure and identify additional attack surface.",
+      "status": "open"
+    }
+  ]
 }
