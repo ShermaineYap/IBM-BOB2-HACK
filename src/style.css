@@ -473,7 +473,7 @@ body {
 /* ── Security Audit Section ───────────────────────────────────────────── */
 .vuln-summary {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 0.85rem;
   margin-bottom: 1.25rem;
 }
@@ -738,3 +738,24 @@ body {
   color: #78a9ff;
   font-family: var(--font-mono);
 }
+
+/* ---- DevPulse: real-data additions ---- */
+.pending-banner {
+  margin: 0 0 1.25rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--ibm-yellow);
+  border-left-width: 4px;
+  border-radius: var(--radius-md);
+  background: #2e2511;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+.pending-banner code { color: var(--ibm-yellow); }
+.vuln-item { cursor: pointer; }
+.vuln-item.selected { outline: 2px solid var(--ibm-blue); }
+.vuln-item.caught { border-left: 4px solid var(--ibm-green); }
+.vuln-item.missed { border-left: 4px solid var(--ibm-red); opacity: 0.85; }
+.stat-card.fixed .stat-val { color: var(--ibm-green); }
+.badge-status.warn { background: var(--ibm-red); color: #fff; }
+.term-code { white-space: pre-wrap; max-height: 28rem; overflow: auto; font-size: 0.8rem; }
+.session-img-wrap img { width: 100%; height: auto; display: block; }

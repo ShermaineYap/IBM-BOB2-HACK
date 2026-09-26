@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DevPulse — IBM Bob 2.0 Developer Onboarding & Quality Assistant</title>
-  <meta name="description" content="AI-powered developer workflow assistant built with IBM Bob 2.0. Accelerates onboarding, automates code reviews, OWASP security audits, and git workflows." />
+  <title>DevPulse — Security audit by IBM Bob 2.0, scored honestly</title>
+  <meta name="description" content="DevPulse runs an OWASP ASVS security audit with IBM Bob 2.0 agent mode and parallel subagents, writes structured findings and fixes, and scores itself against seeded defects." />
+  <link rel="icon" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,398 +13,166 @@
 </head>
 <body>
   <div id="app">
-    <!-- Header -->
     <header class="top-header">
       <div class="header-brand">
         <div class="ibm-logo-icon">
-          <svg width="24" height="24" viewBox="0 0 32 32" fill="currentColor">
-            <path d="M12 4h16v4H12zM12 10h16v4H12zM12 16h16v4H12zM12 22h16v4H12zM4 4h5v24H4z"/>
-          </svg>
+          <svg width="24" height="24" viewBox="0 0 32 32" fill="currentColor"><path d="M12 4h16v4H12zM12 10h16v4H12zM12 16h16v4H12zM12 22h16v4H12zM4 4h5v24H4z"/></svg>
         </div>
         <div class="brand-text">
           <span class="brand-title">DevPulse <span class="badge-v2">IBM Bob 2.0</span></span>
-          <span class="brand-sub">Smart Developer Onboarding & Code Quality Coach</span>
+          <span class="brand-sub">Security audit by Bob, scored against seeded defects</span>
         </div>
       </div>
       <div class="header-actions">
-        <div class="bobcoin-pill" title="IBM Bobcoin Usage Tracking">
+        <div class="bobcoin-pill" id="score-pill" title="Recall = seeded defects Bob found. Precision = findings that were real.">
           <span class="pulse-dot"></span>
-          <span class="coin-label">Bobcoin Usage:</span>
-          <strong class="coin-val">12.8 / 40.0</strong>
-          <span class="coin-pct">(32%)</span>
+          <span class="coin-label">Audit score:</span>
+          <strong class="coin-val" id="pill-score">pending</strong>
         </div>
-        <a href="#bob-sessions" class="btn-sessions" id="nav-sessions-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          bob_sessions/ Evidence
-        </a>
+        <a href="https://github.com/ShermaineYap/IBM-BOB2-HACK" class="btn-sessions" target="_blank" rel="noopener">Repository</a>
       </div>
     </header>
 
-    <!-- Navigation Bar -->
     <nav class="main-nav">
-      <button class="nav-tab active" data-tab="onboarding">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        1. Onboarding & Architecture
-      </button>
-      <button class="nav-tab" data-tab="security">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        2. Security Audit & Literate Refactoring
-      </button>
-      <button class="nav-tab" data-tab="gitflow">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
-        3. Automated Git & PR Assistant
-      </button>
-      <button class="nav-tab" data-tab="sessions">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-        4. Bob Session Evidence (Mandatory Deliverable)
-      </button>
+      <button class="nav-tab active" data-tab="audit">1. Findings &amp; fixes</button>
+      <button class="nav-tab" data-tab="score">2. Score</button>
+      <button class="nav-tab" data-tab="how">3. How Bob does it</button>
+      <button class="nav-tab" data-tab="sessions">4. Bob session evidence</button>
     </nav>
 
-    <!-- Main Content Body -->
     <main class="content-container">
 
-      <!-- TAB 1: ONBOARDING & ARCHITECTURE -->
-      <section id="tab-onboarding" class="tab-pane active">
+      <!-- TAB 1: FINDINGS -->
+      <section id="tab-audit" class="tab-pane active">
         <div class="panel-header">
           <div class="panel-title-wrap">
-            <h2>🚀 Developer Onboarding & Codebase Insights</h2>
-            <p>Accelerates time-to-first-commit from weeks to hours using IBM Bob 2.0 automated documentation and Mermaid UML diagrams.</p>
+            <h2>Findings from Bob's audit of <code>sample_app/</code></h2>
+            <p id="run-summary">Loading…</p>
           </div>
           <div class="panel-tags">
-            <span class="tag tag-bob">IBM Bob Agent Mode</span>
-            <span class="tag tag-init">/init AGENTS.md</span>
-            <span class="tag tag-mermaid">Mermaid.js UML</span>
+            <span class="tag tag-bob">Agent mode</span>
+            <span class="tag tag-bob">Parallel subagents</span>
+            <span class="tag tag-security">OWASP ASVS 4.0</span>
           </div>
+        </div>
+
+        <div id="pending-banner" class="pending-banner" hidden>
+          Bob has not run yet. Open this repo in Bob IDE, switch to Agent mode and ask:
+          <code>Run the security-audit skill on sample_app/</code>. It writes <code>audit/findings.json</code>; this page reads it.
+        </div>
+
+        <div class="vuln-summary" id="severity-cards">
+          <div class="stat-card high"><span class="stat-val" id="count-high">0</span><span class="stat-lbl">High</span></div>
+          <div class="stat-card medium"><span class="stat-val" id="count-med">0</span><span class="stat-lbl">Medium</span></div>
+          <div class="stat-card low"><span class="stat-val" id="count-low">0</span><span class="stat-lbl">Low</span></div>
+          <div class="stat-card fixed"><span class="stat-val" id="count-fixed">0</span><span class="stat-lbl">Fixed by Bob</span></div>
         </div>
 
         <div class="grid-2col">
-          <!-- Left Column: Architecture & Diagram -->
-          <div class="card card-graph">
-            <div class="card-header">
-              <h3>System Architecture & Component UML Diagram</h3>
-              <span class="badge-status">Generated by IBM Bob</span>
-            </div>
-            <div class="card-body">
-              <div class="mermaid-wrap">
-                <pre class="mermaid" id="arch-mermaid">
-graph TD
-    classDef client fill:#1f2d47,stroke:#0F62FE,stroke-width:2px,color:#fff;
-    classDef server fill:#2e2511,stroke:#fddc69,stroke-width:2px,color:#fff;
-    classDef agent fill:#2e1f47,stroke:#8a3ffc,stroke-width:2px,color:#fff;
-
-    Dev["Developer Workspace"] :::client -->|Interacts| Dashboard["DevPulse Web UI"] :::client
-    Dashboard -->|Invokes Commands| BobIDE["IBM Bob IDE 2.0 Core"] :::agent
-    BobIDE -->|Context /init| AGENTS["AGENTS.md Context File"] :::agent
-    BobIDE -->|Spawns Subagents| SecuritySub["Security Auditor Subagent"] :::agent
-    BobIDE -->|Spawns Subagents| UMLSub["Mermaid UML Generator"] :::agent
-    SecuritySub -->|Generates| SARIF["SARIF Compliance Report"] :::server
-    UMLSub -->|Renders| VisualDiagrams["Interactive System Diagrams"] :::server
-    BobIDE -->|Tracks Usage| Evidence["bob_sessions/ Deliverables"] :::server
-                </pre>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right Column: Interactive Setup & Starter Task -->
           <div class="card">
-            <div class="card-header">
-              <h3>Guided Environment Setup & Starter Task</h3>
-              <button class="btn-sm" id="btn-run-init">⚡ Re-run /init Command</button>
-            </div>
-            <div class="card-body">
-              <div class="setup-steps">
-                <div class="step-item done">
-                  <div class="step-num">1</div>
-                  <div class="step-content">
-                    <h4>Workspace Context Initialization</h4>
-                    <p>IBM Bob scanned workspace and produced <code>AGENTS.md</code> with complete architectural guidelines.</p>
-                  </div>
-                </div>
-                <div class="step-item done">
-                  <div class="step-num">2</div>
-                  <div class="step-content">
-                    <h4>Dependency & Tool Verification</h4>
-                    <p>Verified Node.js v24.19.0, Vite 6, and IBM Bob IDE v2.0.2 readiness.</p>
-                  </div>
-                </div>
-                <div class="step-item active">
-                  <div class="step-num">3</div>
-                  <div class="step-content">
-                    <h4>Assigned Starter Issue: #104</h4>
-                    <p><em>"Implement input validation and rate limiting on client authentication endpoints."</em></p>
-                    <div class="code-snippet-box">
-                      <code>@bob /plan Review starter issue #104 and draft implementation step-by-step.</code>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div class="card-header"><h3>Findings</h3><span class="badge-status" id="findings-count"></span></div>
+            <div class="card-body"><div class="vuln-list" id="findings-list"></div></div>
           </div>
-        </div>
-
-        <!-- Repository Context Overview -->
-        <div class="card card-margin">
-          <div class="card-header">
-            <h3>Generated Project Context Preview (AGENTS.md)</h3>
-            <span class="badge-status success">Active Context</span>
-          </div>
-          <div class="card-body">
-            <div class="terminal-block">
-              <div class="terminal-header">
-                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-                <span class="term-title">AGENTS.md — Auto-generated by IBM Bob (/init)</span>
-              </div>
-              <pre class="term-code"><code># AGENTS.md — IBM Bob 2.0 Project Context & Architectural Guide
-
-## Project Overview
-DevPulse is a smart developer onboarding, automated code review, and DevSecOps quality workspace built with IBM Bob 2.0.
-It addresses the critical developer friction points:
-1. Long onboarding times for unfamiliar codebases.
-2. Manual code reviews and security audit overhead.
-3. Inconsistent git commit messages and PR descriptions.
-
-## Technology Stack & Architecture
-- Frontend: Vite Vanilla JS / HTML5 / CSS3 (Carbon Design System Dark Theme)
-- Diagram Engine: Mermaid.js (Class, Sequence, and Flowchart diagrams)
-- AI Core: IBM Bob IDE 2.0 (Agent Mode, Literate Coding, Custom Security Skills, Subagents)
-- Optional Integrations: IBM watsonx Orchestrate & IBM watsonx.ai (Granite foundation models)</code></pre>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 2: SECURITY AUDIT & LITERATE REFACTORING -->
-      <section id="tab-security" class="tab-pane">
-        <div class="panel-header">
-          <div class="panel-title-wrap">
-            <h2>🛡️ OWASP ASVS Security Audit & Literate Refactoring</h2>
-            <p>Actor-critic pattern powered by IBM Bob IDE for automated vulnerability scanning, inline refactoring, and SARIF report generation.</p>
-          </div>
-          <div class="panel-tags">
-            <span class="tag tag-security">OWASP ASVS v4.0</span>
-            <span class="tag tag-bob">Actor-Critic Pattern</span>
-            <span class="tag tag-literate">Literate Coding Inline Diffs</span>
-          </div>
-        </div>
-
-        <div class="grid-2col">
-          <!-- Audit Control & Scan Results -->
           <div class="card">
-            <div class="card-header">
-              <h3>OWASP Security Audit Findings</h3>
-              <button class="btn-primary" id="btn-run-audit">🔍 Trigger Bob Security Audit</button>
-            </div>
-            <div class="card-body">
-              <div class="vuln-summary">
-                <div class="stat-card high">
-                  <span class="stat-val" id="count-high">1</span>
-                  <span class="stat-lbl">High Severity</span>
-                </div>
-                <div class="stat-card medium">
-                  <span class="stat-val" id="count-med">2</span>
-                  <span class="stat-lbl">Medium Severity</span>
-                </div>
-                <div class="stat-card low">
-                  <span class="stat-val" id="count-low">0</span>
-                  <span class="stat-lbl">Low Severity</span>
-                </div>
-              </div>
-
-              <div class="vuln-list" id="vuln-list-container">
-                <div class="vuln-item high-border">
-                  <div class="vuln-header">
-                    <span class="badge-vuln high">HIGH</span>
-                    <strong>OWASP V5.3.1: Unsanitized SQL / Query Parameter Injection</strong>
-                  </div>
-                  <p class="vuln-desc">File: <code>server-backend/routes/auth.js:42</code> — Raw string concatenation used in database query.</p>
-                  <div class="vuln-actions">
-                    <button class="btn-sm btn-fix" data-fix="sql">✨ Auto-Fix with Bob Literate Coding</button>
-                  </div>
-                </div>
-
-                <div class="vuln-item med-border">
-                  <div class="vuln-header">
-                    <span class="badge-vuln med">MEDIUM</span>
-                    <strong>OWASP V2.1.1: Missing Password Complexity Enforcement</strong>
-                  </div>
-                  <p class="vuln-desc">File: <code>server-backend/services/user.js:88</code> — Weak regex for registration passwords.</p>
-                  <div class="vuln-actions">
-                    <button class="btn-sm btn-fix" data-fix="password">✨ Auto-Fix with Bob Literate Coding</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Code Diff Viewer -->
-          <div class="card">
-            <div class="card-header">
-              <h3>Literate Coding Inline Diff Preview</h3>
-              <span class="badge-status highlight">Before & After Refactoring</span>
-            </div>
+            <div class="card-header"><h3>Evidence and fix</h3><span class="badge-status highlight" id="diff-title">Select a finding</span></div>
             <div class="card-body">
               <div class="diff-box">
-                <div class="diff-header">
-                  <span>Target: <code>server-backend/routes/auth.js</code></span>
-                  <span class="diff-tag">Bob Literate Diff</span>
-                </div>
-                <pre class="diff-code" id="diff-code-display"><span class="line-comment">// @bob refactor: sanitize SQL query using parameterized statements</span>
-<span class="line-del">- const query = "SELECT * FROM users WHERE email = '" + req.body.email + "'";</span>
-<span class="line-add">+ const query = "SELECT * FROM users WHERE email = $1";</span>
-<span class="line-add">+ const result = await db.query(query, [req.body.email]);</span></pre>
+                <div class="diff-header"><span id="diff-file">—</span><span class="diff-tag">from audit/fixes/</span></div>
+                <pre class="diff-code" id="diff-code-display">Select a finding on the left.</pre>
               </div>
-
-              <div class="report-export-box">
-                <h4>Compliance Export Formats</h4>
-                <div class="export-btns">
-                  <button class="btn-outline" id="btn-export-sarif">📄 Download SARIF Report</button>
-                  <button class="btn-outline" id="btn-export-oscal">📄 Download OSCAL Report</button>
-                </div>
-              </div>
+              <p class="vuln-desc" id="finding-explanation"></p>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- TAB 3: AUTOMATED GIT & PR ASSISTANT -->
-      <section id="tab-gitflow" class="tab-pane">
+      <!-- TAB 2: SCORE -->
+      <section id="tab-score" class="tab-pane">
         <div class="panel-header">
           <div class="panel-title-wrap">
-            <h2>⚡ Automated Git Commits & Pull Request Generator</h2>
-            <p>Uses IBM Bob IDE to format conventional commits, summarize code changes, and open Pull Requests automatically.</p>
-          </div>
-          <div class="panel-tags">
-            <span class="tag tag-git">Git Automation</span>
-            <span class="tag tag-bob">Conventional Commits</span>
-            <span class="tag tag-pr">Automated PR Generator</span>
+            <h2>How good was the audit?</h2>
+            <p>We seeded <code>sample_app/</code> with known defects before Bob saw it. <code>scripts/score_audit.mjs</code> compares Bob's findings against that answer key. These numbers are computed, not claimed.</p>
           </div>
         </div>
-
+        <div class="vuln-summary" id="metric-cards">
+          <div class="stat-card"><span class="stat-val" id="m-recall">—</span><span class="stat-lbl">Recall (found / seeded)</span></div>
+          <div class="stat-card"><span class="stat-val" id="m-precision">—</span><span class="stat-lbl">Precision (real / reported)</span></div>
+          <div class="stat-card"><span class="stat-val" id="m-caught">—</span><span class="stat-lbl">Caught</span></div>
+          <div class="stat-card"><span class="stat-val" id="m-missed">—</span><span class="stat-lbl">Missed</span></div>
+          <div class="stat-card"><span class="stat-val" id="m-fp">—</span><span class="stat-lbl">False positives</span></div>
+        </div>
         <div class="grid-2col">
-          <!-- Commit Message Generator -->
           <div class="card">
-            <div class="card-header">
-              <h3>AI Conventional Commit Formatter</h3>
-              <button class="btn-primary" id="btn-generate-commit">✨ Generate Commit Message</button>
-            </div>
-            <div class="card-body">
-              <div class="form-group">
-                <label>Staged Files Diff Summary</label>
-                <textarea class="code-textarea" readonly>modified: server-backend/routes/auth.js
-modified: server-backend/services/user.js
-added: tests/auth.test.js</textarea>
-              </div>
-              <div class="commit-output-box">
-                <label>Formatted Commit Message</label>
-                <div class="commit-msg-preview" id="commit-msg-text">
-                  <code>fix(auth): sanitize user authentication queries and enforce password complexity (#104)</code>
-                </div>
-              </div>
-            </div>
+            <div class="card-header"><h3>Seeded defects</h3><span class="badge-status">answer key</span></div>
+            <div class="card-body"><div class="vuln-list" id="ground-truth-list"></div></div>
           </div>
-
-          <!-- PR Description Preview -->
           <div class="card">
-            <div class="card-header">
-              <h3>Pull Request Description Generator</h3>
-              <span class="badge-status">Ready for Push</span>
-            </div>
+            <div class="card-header"><h3>Why score at all</h3></div>
             <div class="card-body">
-              <div class="terminal-block">
-                <div class="terminal-header">
-                  <span class="term-title">PR #42 — Fix SQL Injection & Password Enforcement</span>
-                </div>
-                <div class="pr-body-markdown" id="pr-markdown-text">
-                  <h4>Summary of Changes</h4>
-                  <ul>
-                    <li>Sanitized SQL queries in <code>auth.js</code> using parameterized query bindings.</li>
-                    <li>Updated password validation regex in <code>user.js</code> according to OWASP ASVS 2.1.1.</li>
-                    <li>Added 100% test coverage in <code>auth.test.js</code>.</li>
-                  </ul>
-                  <h4>Evidence of Bob Usage</h4>
-                  <p>All AI tasks executed under IBM Bob IDE task session <code>#02</code>. Task session summary screenshot stored at <code>bob_sessions/teamdevpulse_task02_security_audit_summary.png</code>.</p>
-                </div>
-              </div>
+              <p class="vuln-desc">Most AI audit demos show a scan that finds everything. That proves nothing, because you can't tell what it missed. Seeding the target first turns "Bob found 8 issues" into "Bob found 8 of 10, with 1 false alarm" — a number a security lead can act on.</p>
+              <p class="vuln-desc">Matching rule: same file, same category, line within ±3. Each seeded defect can be matched once. Anything unmatched is a false positive.</p>
+              <p class="vuln-desc">Re-run: <code>node scripts/score_audit.mjs</code></p>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- TAB 4: BOB SESSION EVIDENCE (MANDATORY DELIVERABLE) -->
+      <!-- TAB 3: HOW -->
+      <section id="tab-how" class="tab-pane">
+        <div class="panel-header">
+          <div class="panel-title-wrap">
+            <h2>How Bob does it</h2>
+            <p>Two project skills in <code>.bob/skills/</code> tell Bob exactly what to do. Bob runs them in Agent mode, fans out one subagent per file, and writes files — not chat — that this page renders.</p>
+          </div>
+        </div>
+        <div class="card card-graph">
+          <div class="card-header"><h3>Pipeline</h3><span class="badge-status">actual flow</span></div>
+          <div class="card-body">
+            <div class="mermaid-wrap"><pre class="mermaid">
+flowchart LR
+  classDef bob fill:#2e1f47,stroke:#8a3ffc,color:#fff;
+  classDef file fill:#2e2511,stroke:#fddc69,color:#fff;
+  classDef ui fill:#1f2d47,stroke:#0F62FE,color:#fff;
+  U[Developer<br/>in Bob IDE]:::ui -->|"run security-audit skill"| A[Bob agent]:::bob
+  A --> S1[explore subagent<br/>routes/auth.js]:::bob
+  A --> S2[explore subagent<br/>routes/users.js]:::bob
+  A --> S3[explore subagent<br/>services, config…]:::bob
+  S1 & S2 & S3 --> M[merge + verify<br/>evidence lines]:::bob
+  M --> F[(audit/findings.json)]:::file
+  F -->|"run generate-fixes skill"| G[general subagents<br/>one per finding]:::bob
+  G --> D[(audit/fixes/*.diff)]:::file
+  F & D --> SC[score_audit.mjs<br/>vs ground_truth]:::file
+  SC --> W[this dashboard]:::ui
+            </pre></div>
+          </div>
+        </div>
+        <div class="grid-2col card-margin">
+          <div class="card">
+            <div class="card-header"><h3>security-audit skill</h3><span class="badge-status">.bob/skills/security-audit/SKILL.md</span></div>
+            <div class="card-body"><div class="terminal-block"><pre class="term-code" id="skill-audit-text"></pre></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>generate-fixes skill</h3><span class="badge-status">.bob/skills/generate-fixes/SKILL.md</span></div>
+            <div class="card-body"><div class="terminal-block"><pre class="term-code" id="skill-fixes-text"></pre></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: EVIDENCE -->
       <section id="tab-sessions" class="tab-pane">
         <div class="panel-header">
           <div class="panel-title-wrap">
-            <h2>📊 Mandatory Deliverable: <code>bob_sessions/</code> Evidence Showcase</h2>
-            <p>Verification screenshots of IBM Bob IDE Task Session Summaries required for hackathon submission eligibility.</p>
+            <h2>Bob task session evidence</h2>
+            <p>Every PNG in <code>bob_sessions/</code> is a screenshot of a Bob IDE task session consumption summary, captured right after the task ran. This page lists whatever is in that folder — nothing is hand-entered.</p>
           </div>
-          <div class="panel-tags">
-            <span class="tag tag-mandatory">Mandatory Submission Requirement</span>
-            <span class="tag tag-bob">Task Session Summaries</span>
-          </div>
+          <div class="panel-tags"><span class="tag tag-mandatory">Mandatory deliverable</span></div>
         </div>
-
-        <div class="session-gallery-grid">
-          <div class="session-card">
-            <div class="session-card-header">
-              <span class="task-badge">Task #1</span>
-              <h4>Codebase Architecture & UML Generation</h4>
-            </div>
-            <div class="session-img-wrap">
-              <img src="./bob_sessions/teamdevpulse_task01_onboarding_arch_summary.png" alt="Task 1 Summary Screenshot" />
-            </div>
-            <div class="session-card-meta">
-              <span><strong>Bobcoins:</strong> 3.8 / 40.0 (9.5%)</span>
-              <span><strong>File:</strong> <code>bob_sessions/teamdevpulse_task01_onboarding_arch_summary.png</code></span>
-            </div>
-          </div>
-
-          <div class="session-card">
-            <div class="session-card-header">
-              <span class="task-badge">Task #2</span>
-              <h4>OWASP ASVS Security Audit & SARIF</h4>
-            </div>
-            <div class="session-img-wrap">
-              <img src="./bob_sessions/teamdevpulse_task02_security_audit_summary.png" alt="Task 2 Summary Screenshot" />
-            </div>
-            <div class="session-card-meta">
-              <span><strong>Bobcoins:</strong> 4.5 / 40.0 (11.2%)</span>
-              <span><strong>File:</strong> <code>bob_sessions/teamdevpulse_task02_security_audit_summary.png</code></span>
-            </div>
-          </div>
-
-          <div class="session-card">
-            <div class="session-card-header">
-              <span class="task-badge">Task #3</span>
-              <h4>Literate Coding & Inline Refactoring</h4>
-            </div>
-            <div class="session-img-wrap">
-              <img src="./bob_sessions/teamdevpulse_task03_literate_coding_summary.png" alt="Task 3 Summary Screenshot" />
-            </div>
-            <div class="session-card-meta">
-              <span><strong>Bobcoins:</strong> 2.9 / 40.0 (7.2%)</span>
-              <span><strong>File:</strong> <code>bob_sessions/teamdevpulse_task03_literate_coding_summary.png</code></span>
-            </div>
-          </div>
-
-          <div class="session-card">
-            <div class="session-card-header">
-              <span class="task-badge">Task #4</span>
-              <h4>Automated Commit & PR Description</h4>
-            </div>
-            <div class="session-img-wrap">
-              <img src="./bob_sessions/teamdevpulse_task04_pr_generation_summary.png" alt="Task 4 Summary Screenshot" />
-            </div>
-            <div class="session-card-meta">
-              <span><strong>Bobcoins:</strong> 1.6 / 40.0 (4.0%)</span>
-              <span><strong>File:</strong> <code>bob_sessions/teamdevpulse_task04_pr_generation_summary.png</code></span>
-            </div>
-          </div>
-        </div>
+        <div class="session-gallery-grid" id="session-gallery"></div>
+        <p class="vuln-desc" id="session-empty" hidden>No screenshots yet. See <code>bob_sessions/README.md</code> for how to capture them.</p>
       </section>
 
     </main>
   </div>
-
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>
