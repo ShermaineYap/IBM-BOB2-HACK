@@ -1,6 +1,6 @@
 # DevPulse — security audit by IBM Bob 2.0, scored honestly
 
-**Live demo:** _(Vercel URL goes here)_ · **Video:** _(link)_ · IBM Bob 2.0 Hackathon, 25–27 September 2026
+**Live demo:** https://ibm-bob-2-hack.vercel.app/ · **Video:** _(link)_ · IBM Bob 2.0 Hackathon, 25–27 September 2026
 
 Most AI code-audit demos show a scan that finds everything. That proves
 nothing, because nobody knows what it missed. DevPulse seeds a real codebase

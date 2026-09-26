@@ -9,7 +9,7 @@
 | Technology tags | IBM Bob IDE 2.0, JavaScript, Node.js, Express, Vite, OWASP ASVS |
 | Category | Developer tools / DevSecOps |
 | Demo platform | Vercel |
-| Application URL | _(Vercel URL)_ |
+| Application URL | https://ibm-bob-2-hack.vercel.app/ |
 | Repository | https://github.com/ShermaineYap/IBM-BOB2-HACK |
 | Video | _(MP4, ≤ 5 min)_ |
 | Slides | _(PDF)_ |
@@ -42,7 +42,7 @@ Results: _(recall X/10, precision Y%, N fixes — fill in from audit/metrics.jso
 - [ ] `node scripts/score_audit.mjs` run; numbers copied into README "Results"
 - [ ] Real task session PNGs in `bob_sessions/` for every Bob task
 - [ ] `bash scripts/check_secrets.sh` passes
-- [ ] Deployed to Vercel; URL opens in an incognito window on another device
+- [x] Deployed to Vercel: https://ibm-bob-2-hack.vercel.app/
 - [ ] Repo is public
 - [ ] Video ≤ 5 min, MP4; slides PDF; cover image 16:9
 - [ ] Every number in the video and slides comes from `audit/metrics.json`
