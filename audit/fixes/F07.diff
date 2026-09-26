@@ -1,0 +1,30 @@
+--- a/sample_app/routes/auth.js
++++ b/sample_app/routes/auth.js
+@@ -1,6 +1,10 @@
+ import { Router } from 'express';
++import rateLimit from 'express-rate-limit';
+ import { get } from '../db.js';
+ import { createUser, isStrongPassword, hashPassword } from '../services/user.js';
+ import { signToken } from '../middleware/auth.js';
+ 
+ export const authRouter = Router();
++
++const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false });
+@@ -23,7 +27,7 @@ authRouter.post('/register', async (req, res, next) => {
+   }
+ });
+ 
+-authRouter.post('/login', async (req, res, next) => {
++authRouter.post('/login', loginLimiter, async (req, res, next) => {
+   try {
+     const { email, password } = req.body ?? {};
+     const hashed = hashPassword(password ?? '');
+--- a/sample_app/package.json
++++ b/sample_app/package.json
+@@ -13,6 +13,7 @@
+   "dependencies": {
+     "express": "^4.19.2",
++    "express-rate-limit": "^7.4.1",
+     "sqlite3": "^5.1.7",
+     "jsonwebtoken": "^9.0.2"
+   }

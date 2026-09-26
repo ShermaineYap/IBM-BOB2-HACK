@@ -8,7 +8,8 @@
  * A finding matches a seeded defect when the file and category are equal and
  * the line numbers are within 3 of each other. Each defect can be matched once.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -39,6 +40,17 @@ const missed = defects.filter((d) => !d.matched_by);
 const falsePositives = findings.filter((f) => !f.matches);
 const fixed = findings.filter((f) => f.status === 'fixed');
 
+// Does each fix diff actually apply to the sample app? (git apply --check, exact hunk headers required)
+const applies = {};
+for (const f of findings) {
+  if (!f.fix_diff) continue;
+  const path = resolve(root, f.fix_diff);
+  if (!existsSync(path)) { applies[f.id] = 'missing'; continue; }
+  const r = spawnSync('git', ['apply', '--check', f.fix_diff], { cwd: root, encoding: 'utf8' });
+  applies[f.id] = r.status === 0 ? 'clean' : 'fails';
+}
+const fixesApply = Object.values(applies).filter((v) => v === 'clean').length;
+
 const precision = findings.length ? caught.length / findings.length : 0;
 const recall = defects.length ? caught.length / defects.length : 0;
 
@@ -58,6 +70,8 @@ const metrics = {
   missed: missed.length,
   false_positives: falsePositives.length,
   fixed: fixed.length,
+  fixes_apply_cleanly: fixesApply,
+  fix_apply_status: applies,
   precision: Number(precision.toFixed(3)),
   recall: Number(recall.toFixed(3)),
   by_severity: bySeverity,
@@ -74,7 +88,7 @@ console.log(`  seeded defects : ${metrics.seeded}`);
 console.log(`  reported       : ${metrics.reported}`);
 console.log(`  caught         : ${metrics.caught}  (recall ${pct(recall)})`);
 console.log(`  false positives: ${metrics.false_positives}  (precision ${pct(precision)})`);
-console.log(`  fixed          : ${metrics.fixed}`);
+console.log(`  fixed          : ${metrics.fixed}  (${fixesApply} diffs apply cleanly with git apply --check)`);
 if (missed.length) console.log(`  missed         : ${missed.map((d) => `${d.id} ${d.category}`).join(', ')}`);
 if (falsePositives.length) console.log(`  false positives: ${falsePositives.map((f) => `${f.id} ${f.title}`).join(', ')}`);
 console.log(`\nwrote audit/metrics.json\n`);

@@ -1,0 +1,12 @@
+--- a/sample_app/routes/users.js
++++ b/sample_app/routes/users.js
+@@ -31,7 +31,10 @@ usersRouter.get('/:id', requireAuth, async (req, res, next) => {
+ export const adminRouter = Router();
+ 
+-adminRouter.get('/users', async (req, res, next) => {
++adminRouter.get('/users', requireAuth, async (req, res, next) => {
+   try {
++    if (!req.user?.is_admin) return res.status(403).json({ error: 'forbidden' });
+     return res.json(await listAll());
+   } catch (err) {
+     return next(err);

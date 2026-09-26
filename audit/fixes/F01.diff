@@ -1,0 +1,16 @@
+--- a/sample_app/config.js
++++ b/sample_app/config.js
+@@ -1,7 +1,11 @@
+ // Runtime configuration for the Shoply API.
++if (!process.env.JWT_SECRET) {
++  throw new Error('JWT_SECRET environment variable must be set');
++}
++
+ export const config = {
+   port: process.env.PORT || 3000,
+   dbFile: process.env.DB_FILE || './shoply.db',
+   // Signing key for session tokens.
+-  jwtSecret: 'shoply-prod-secret-2024-do-not-share',
++  jwtSecret: process.env.JWT_SECRET,
+   tokenTtlSeconds: 60 * 60 * 24 * 30,
+ };

@@ -27,7 +27,8 @@
       "title": "JWT signing key hardcoded as literal string in config",
       "evidence": "  jwtSecret: 'shoply-prod-secret-2024-do-not-share',",
       "explanation": "The production JWT signing secret is committed directly in source code. An attacker with repository access can forge arbitrary session tokens and impersonate any user.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/fixes/F01.diff"
     },
     {
       "id": "F02",
@@ -39,7 +40,8 @@
       "title": "Session token lifetime set to 30 days",
       "evidence": "  tokenTtlSeconds: 60 * 60 * 24 * 30,",
       "explanation": "Tokens remain valid for 30 days with no refresh or revocation mechanism. A stolen token gives an attacker a month-long window of access.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/fixes/F02.diff"
     },
     {
       "id": "F03",
@@ -51,7 +53,8 @@
       "title": "Password minimum length is only 6 characters",
       "evidence": "  return typeof password === 'string' && password.length > 6;",
       "explanation": "Passwords of 7 characters are accepted; the ASVS minimum is 12. Short passwords are easily cracked by brute force or dictionary attacks.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/fixes/F03.diff"
     },
     {
       "id": "F04",
@@ -63,7 +66,8 @@
       "title": "Passwords hashed with MD5 (unsalted)",
       "evidence": "  return crypto.createHash('md5').update(password).digest('hex');",
       "explanation": "MD5 is cryptographically broken and produces no per-user salt. An attacker who obtains the database can crack all passwords in seconds using rainbow tables or GPU-accelerated hash attacks.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/fixes/F04.diff"
     },
     {
       "id": "F05",
@@ -75,7 +79,8 @@
       "title": "SQL injection via string concatenation in searchByName",
       "evidence": "  return all(\"SELECT id, email, display_name FROM users WHERE display_name LIKE '%\" + term + \"%'\");",
       "explanation": "The caller-supplied search term is concatenated directly into SQL. An attacker can escape the LIKE clause and execute arbitrary SQL, extracting or modifying the entire database.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/fixes/F05.diff"
     },
     {
       "id": "F06",
@@ -87,7 +92,8 @@
       "title": "SQL injection via string concatenation in login query",
       "evidence": "      \"SELECT * FROM users WHERE email = '\" + email + \"' AND password = '\" + hashed + \"'\"",
       "explanation": "The email field from the request body is concatenated directly into SQL. An attacker can inject SQL to bypass authentication entirely and log in as any user.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/fixes/F06.diff"
     },
     {
       "id": "F07",
@@ -99,7 +105,8 @@
       "title": "Login endpoint has no rate limiting or lockout",
       "evidence": "authRouter.post('/login', async (req, res, next) => {",
       "explanation": "There is no throttle, lockout, or delay on POST /auth/login. An attacker can make unlimited password guessing attempts against any account.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/fixes/F07.diff"
     },
     {
       "id": "F08",
@@ -111,7 +118,8 @@
       "title": "Reflected XSS: search term interpolated into HTML response",
       "evidence": "      `<h1>Results for ${term}</h1>` +",
       "explanation": "The req.query.q value is interpolated directly into an HTML response without encoding. An attacker can craft a URL that executes arbitrary JavaScript in a victim's browser, stealing session tokens or performing actions on their behalf.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/fixes/F08.diff"
     },
     {
       "id": "F09",
@@ -123,7 +131,8 @@
       "title": "Admin /users endpoint accessible with no authentication or role check",
       "evidence": "adminRouter.get('/users', async (req, res, next) => {",
       "explanation": "The GET /admin/users route returns all user records including admin flags without verifying a token or role. Any unauthenticated attacker can enumerate every account in the system.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/fixes/F09.diff"
     },
     {
       "id": "F10",
@@ -135,7 +144,8 @@
       "title": "Global error handler returns stack trace to clients",
       "evidence": "  res.status(500).json({ error: err.message, stack: err.stack });",
       "explanation": "Full stack traces including internal file paths are sent in every 500 response. An attacker can use this information to map the application's internal structure and identify additional attack surface.",
-      "status": "open"
+      "status": "fixed",
+      "fix_diff": "audit/fixes/F10.diff"
     }
   ]
 }

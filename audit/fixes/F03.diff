@@ -1,0 +1,11 @@
+--- a/sample_app/services/user.js
++++ b/sample_app/services/user.js
+@@ -2,7 +2,7 @@
+ import { run, get, all } from '../db.js';
+ 
+ export function isStrongPassword(password) {
+-  return typeof password === 'string' && password.length > 6;
++  return typeof password === 'string' && password.length >= 12;
+ }
+ 
+ export function hashPassword(password) {

@@ -1,0 +1,8 @@
+--- a/sample_app/services/user.js
++++ b/sample_app/services/user.js
+@@ -27,5 +27,5 @@
+ 
+ export async function searchByName(term) {
+-  return all("SELECT id, email, display_name FROM users WHERE display_name LIKE '%" + term + "%'");
++  return all('SELECT id, email, display_name FROM users WHERE display_name LIKE ?', ['%' + term + '%']);
+ }

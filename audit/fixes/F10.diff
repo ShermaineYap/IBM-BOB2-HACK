@@ -1,0 +1,9 @@
+--- a/sample_app/server.js
++++ b/sample_app/server.js
+@@ -13,5 +13,6 @@
+ 
+ app.use((err, _req, res, _next) => {
+-  res.status(500).json({ error: err.message, stack: err.stack });
++  console.error(err.stack);
++  res.status(500).json({ error: 'Internal Server Error' });
+ });

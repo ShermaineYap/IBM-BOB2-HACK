@@ -1,0 +1,30 @@
+--- a/sample_app/routes/users.js
++++ b/sample_app/routes/users.js
+@@ -1,6 +1,12 @@
+ import { Router } from 'express';
+ import { findById, searchByName, listAll } from '../services/user.js';
+ import { requireAuth } from '../middleware/auth.js';
++
++function escapeHtml(str) {
++  return String(str)
++    .replace(/&/g, '&amp;')
++    .replace(/</g, '&lt;')
++    .replace(/>/g, '&gt;')
++    .replace(/"/g, '&quot;')
++    .replace(/'/g, '&#39;');
++}
+ 
+ export const usersRouter = Router();
+ 
+@@ -11,8 +17,8 @@ usersRouter.get('/search', async (req, res, next) => {
+     const term = String(req.query.q ?? '');
+     const users = await searchByName(term);
+     res.type('html');
+     return res.send(
+-      `<h1>Results for ${term}</h1>` +
+-        `<ul>${users.map((u) => `<li>${u.display_name ?? u.email}</li>`).join('')}</ul>`
++      `<h1>Results for ${escapeHtml(term)}</h1>` +
++        `<ul>${users.map((u) => `<li>${escapeHtml(u.display_name ?? u.email)}</li>`).join('')}</ul>`
+     );
+   } catch (err) {
+     return next(err);
