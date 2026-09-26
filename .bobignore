@@ -1,9 +1,8 @@
-# .bobignore — Files excluded from Bob AI context window
-
 node_modules/
 dist/
 .git/
 *.log
 .DS_Store
-tmp/
 coverage/
+bob_sessions/*.png
+audit/ground_truth.json

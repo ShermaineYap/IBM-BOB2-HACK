@@ -1,16 +1,8 @@
-# .bobrules — IBM Bob 2.0 Team Guidelines
+# .bobrules — DevPulse
 
-[General]
-enforce_documentation = true
-auto_generate_tests = true
-commit_message_format = "conventional"
-
-[Security]
-audit_framework = "OWASP ASVS v4.0"
-actor_critic_enabled = true
-block_hardcoded_secrets = true
-
-[CodeStyle]
-js_standard = "ES2024"
-css_theme = "Carbon Dark (#161616)"
-max_function_complexity = 10
+See .bob/rules/devpulse.md for the full rules. In short:
+- sample_app/ stays vulnerable; fixes are diffs under audit/fixes/
+- never read audit/ground_truth.json unless asked to score
+- findings go to audit/findings.json (schema: audit/findings.schema.json)
+- per-file work runs in parallel subagents
+- screenshot the task session summary into bob_sessions/ after every task
