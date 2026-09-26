@@ -1,6 +1,7 @@
+diff --git a/sample_app/config.js b/sample_app/config.js
 --- a/sample_app/config.js
 +++ b/sample_app/config.js
-@@ -1,7 +1,11 @@
+@@ -1,8 +1,12 @@
  // Runtime configuration for the Shoply API.
 +if (!process.env.JWT_SECRET) {
 +  throw new Error('JWT_SECRET environment variable must be set');

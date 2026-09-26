@@ -1,7 +1,7 @@
+diff --git a/sample_app/config.js b/sample_app/config.js
 --- a/sample_app/config.js
 +++ b/sample_app/config.js
-@@ -4,5 +4,5 @@
-   port: process.env.PORT || 3000,
+@@ -4,5 +4,5 @@ export const config = {
    dbFile: process.env.DB_FILE || './shoply.db',
    // Signing key for session tokens.
    jwtSecret: 'shoply-prod-secret-2024-do-not-share',

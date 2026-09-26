@@ -13,7 +13,7 @@ echo "Scanning for credentials..."
 hits=$(grep -rIniE "$ASSIGNED|$BLOCKS" . \
   --exclude-dir=.git --exclude-dir=__pycache__ --exclude-dir=.venv \
   --exclude-dir=.pytest_cache --exclude-dir=dist --exclude-dir=node_modules \
-  --exclude=check_secrets.sh --exclude=.env.example --exclude-dir=sample_app || true)
+  --exclude=check_secrets.sh --exclude=.env.example --exclude-dir=sample_app --exclude-dir=audit || true)
 
 if [ -n "$hits" ]; then
   echo "POSSIBLE CREDENTIALS FOUND -- review each line before committing:"

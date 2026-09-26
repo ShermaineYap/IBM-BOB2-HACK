@@ -1,6 +1,8 @@
+diff --git a/sample_app/routes/users.js b/sample_app/routes/users.js
 --- a/sample_app/routes/users.js
 +++ b/sample_app/routes/users.js
-@@ -31,7 +31,10 @@ usersRouter.get('/:id', requireAuth, async (req, res, next) => {
+@@ -31,8 +31,9 @@ usersRouter.get('/:id', requireAuth, async (req, res, next) => {
+ 
  export const adminRouter = Router();
  
 -adminRouter.get('/users', async (req, res, next) => {

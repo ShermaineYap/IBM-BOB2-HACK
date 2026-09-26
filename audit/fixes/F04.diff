@@ -1,6 +1,7 @@
+diff --git a/sample_app/package.json b/sample_app/package.json
 --- a/sample_app/package.json
 +++ b/sample_app/package.json
-@@ -13,6 +13,7 @@
+@@ -10,6 +10,7 @@
    "dependencies": {
      "express": "^4.19.2",
      "sqlite3": "^5.1.7",
@@ -9,9 +10,37 @@
 +    "bcrypt": "^5.1.1"
    }
  }
+diff --git a/sample_app/routes/auth.js b/sample_app/routes/auth.js
+--- a/sample_app/routes/auth.js
++++ b/sample_app/routes/auth.js
+@@ -1,6 +1,6 @@
+ import { Router } from 'express';
+-import { get } from '../db.js';
+-import { createUser, isStrongPassword, hashPassword } from '../services/user.js';
++import bcrypt from 'bcrypt';
++import { createUser, isStrongPassword, findByEmail } from '../services/user.js';
+ import { signToken } from '../middleware/auth.js';
+ 
+ export const authRouter = Router();
+@@ -24,11 +24,9 @@ authRouter.post('/register', async (req, res, next) => {
+ authRouter.post('/login', async (req, res, next) => {
+   try {
+     const { email, password } = req.body ?? {};
+-    const hashed = hashPassword(password ?? '');
+-    const user = await get(
+-      "SELECT * FROM users WHERE email = '" + email + "' AND password = '" + hashed + "'"
+-    );
+-    if (!user) {
++    const user = await findByEmail(email);
++    const valid = user && (await bcrypt.compare(password ?? '', user.password));
++    if (!valid) {
+       return res.status(401).json({ error: 'invalid credentials' });
+     }
+     return res.json({ token: signToken(user) });
+diff --git a/sample_app/services/user.js b/sample_app/services/user.js
 --- a/sample_app/services/user.js
 +++ b/sample_app/services/user.js
-@@ -1,10 +1,10 @@
+@@ -1,18 +1,18 @@
 -import crypto from 'node:crypto';
 +import bcrypt from 'bcrypt';
  import { run, get, all } from '../db.js';
@@ -27,28 +56,10 @@
  }
  
  export async function createUser({ email, password, displayName }) {
---- a/sample_app/routes/auth.js
-+++ b/sample_app/routes/auth.js
-@@ -1,7 +1,7 @@
- import { Router } from 'express';
--import { get } from '../db.js';
--import { createUser, isStrongPassword, hashPassword } from '../services/user.js';
-+import bcrypt from 'bcrypt';
-+import { createUser, isStrongPassword, findByEmail } from '../services/user.js';
- import { signToken } from '../middleware/auth.js';
- 
- export const authRouter = Router();
-@@ -24,10 +24,10 @@ authRouter.post('/login', async (req, res, next) => {
-   try {
-     const { email, password } = req.body ?? {};
--    const hashed = hashPassword(password ?? '');
--    const user = await get(
--      "SELECT * FROM users WHERE email = '" + email + "' AND password = '" + hashed + "'"
--    );
--    if (!user) {
-+    const user = await findByEmail(email);
-+    const valid = user && await bcrypt.compare(password ?? '', user.password);
-+    if (!valid) {
-       return res.status(401).json({ error: 'invalid credentials' });
-     }
-     return res.json({ token: signToken(user) });
+   const result = await run(
+     'INSERT INTO users (email, password, display_name) VALUES (?, ?, ?)',
+-    [email, hashPassword(password), displayName ?? null]
++    [email, await hashPassword(password), displayName ?? null]
+   );
+   return { id: result.lastID, email, displayName };
+ }

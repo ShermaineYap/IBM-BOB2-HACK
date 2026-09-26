@@ -1,6 +1,7 @@
+diff --git a/sample_app/services/user.js b/sample_app/services/user.js
 --- a/sample_app/services/user.js
 +++ b/sample_app/services/user.js
-@@ -2,7 +2,7 @@
+@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
  import { run, get, all } from '../db.js';
  
  export function isStrongPassword(password) {

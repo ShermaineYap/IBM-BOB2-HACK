@@ -1,10 +1,10 @@
+diff --git a/sample_app/routes/users.js b/sample_app/routes/users.js
 --- a/sample_app/routes/users.js
 +++ b/sample_app/routes/users.js
-@@ -1,6 +1,12 @@
- import { Router } from 'express';
+@@ -2,6 +2,15 @@ import { Router } from 'express';
  import { findById, searchByName, listAll } from '../services/user.js';
  import { requireAuth } from '../middleware/auth.js';
-+
+ 
 +function escapeHtml(str) {
 +  return String(str)
 +    .replace(/&/g, '&amp;')
@@ -13,11 +13,11 @@
 +    .replace(/"/g, '&quot;')
 +    .replace(/'/g, '&#39;');
 +}
- 
++
  export const usersRouter = Router();
  
-@@ -11,8 +17,8 @@ usersRouter.get('/search', async (req, res, next) => {
-     const term = String(req.query.q ?? '');
+ // Search is public so the storefront can show seller names.
+@@ -11,8 +20,8 @@ usersRouter.get('/search', async (req, res, next) => {
      const users = await searchByName(term);
      res.type('html');
      return res.send(

@@ -1,9 +1,12 @@
+diff --git a/sample_app/routes/auth.js b/sample_app/routes/auth.js
 --- a/sample_app/routes/auth.js
 +++ b/sample_app/routes/auth.js
-@@ -27,7 +27,7 @@ authRouter.post('/login', async (req, res, next) => {
+@@ -26,7 +26,7 @@ authRouter.post('/login', async (req, res, next) => {
      const { email, password } = req.body ?? {};
      const hashed = hashPassword(password ?? '');
      const user = await get(
 -      "SELECT * FROM users WHERE email = '" + email + "' AND password = '" + hashed + "'"
 +      'SELECT * FROM users WHERE email = ? AND password = ?', [email, hashed]
      );
+     if (!user) {
+       return res.status(401).json({ error: 'invalid credentials' });
