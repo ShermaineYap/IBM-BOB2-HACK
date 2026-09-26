@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const dir = process.argv[2] || 'audit';
 const { run = {}, findings = [] } = JSON.parse(readFileSync(resolve(root, dir, 'findings.json'), 'utf8'));
+const plain = (s) => String(s ?? '').replace(/\s*[\u2014\u2013]\s*/g, ', ');
 const LEVEL = { high: 'error', medium: 'warning', low: 'note' };
 const SCORE = { high: '8.0', medium: '5.0', low: '2.0' };
 
@@ -40,7 +41,7 @@ const sarif = {
       results: findings.map((f) => ({
         ruleId: f.category,
         level: LEVEL[f.severity] ?? 'warning',
-        message: { text: `${f.title}. ${f.explanation}` },
+        message: { text: plain(`${f.title}. ${f.explanation}`) },
         locations: [{ physicalLocation: { artifactLocation: { uri: f.file }, region: { startLine: f.line, snippet: { text: f.evidence } } } }],
         partialFingerprints: { devpulseId: `${dir}:${f.id}` },
         properties: { 'security-severity': SCORE[f.severity], asvs: f.asvs, status: f.status ?? 'open', fixDiff: f.fix_diff },
@@ -49,4 +50,4 @@ const sarif = {
   ],
 };
 writeFileSync(resolve(root, dir, 'findings.sarif'), JSON.stringify(sarif, null, 2) + '\n');
-console.log(`wrote ${dir}/findings.sarif — ${findings.length} results, ${rules.length} rules`);
+console.log(`wrote ${dir}/findings.sarif (${findings.length} results, ${rules.length} rules)`);

@@ -91,7 +91,7 @@ const metrics = {
 writeFileSync(resolve(root, dir, 'metrics.json'), JSON.stringify(metrics, null, 2) + '\n');
 
 const pct = (x) => `${Math.round(x * 100)}%`;
-console.log(`\nDevPulse audit score — ${dir} (${metrics.target})`);
+console.log(`\nDevPulse audit score: ${dir} (${metrics.target})`);
 console.log(`  seeded defects : ${metrics.seeded}   decoys: ${metrics.decoys}`);
 console.log(`  reported       : ${metrics.reported}`);
 console.log(`  caught         : ${metrics.caught}  (recall ${pct(recall)})`);

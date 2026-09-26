@@ -20,11 +20,11 @@ with `fix_diff` and `status: "fixed"`.
 3. Each subagent returns a unified diff (`--- a/<path>` / `+++ b/<path>`,
    standard hunks) that fixes **only that finding**. It must not touch other
    lines, reformat, or rename things.
-4. Write each diff to the fixes folder. Do **not** apply it to the target —
-   targets stay vulnerable so the audit remains reproducible.
+4. Write each diff to the fixes folder. Do **not** apply it to the target.
+   Targets stay vulnerable so the audit remains reproducible.
 5. **Verify every diff before reporting it**: run `git apply --check <diff>`
    from the repository root. If it fails, the hunk headers or context are
-   wrong — regenerate the diff by copying the target file to a scratch
+   wrong, so regenerate the diff by copying the target file to a scratch
    location, editing the copy, and producing the patch with
    `git diff --no-index`, then rewrite the paths to `a/<target>/…` and
    `b/<target>/…`. A diff that does not apply is not a fix.

@@ -20,7 +20,7 @@ by default, or the findings path the user names (for example
 2. Enumerate every `.js` file under the target. For each file, spawn an
    **explore subagent** (read-only) that reads the file and returns candidate
    findings as JSON. Run the subagents **in parallel**, one per file. Do not
-   read all files into the main conversation — that wastes context and
+   read all files into the main conversation, because that wastes context and
    Bobcoins.
 3. Merge the candidates. Remove duplicates. For each remaining candidate,
    re-open only the lines around it to confirm the `evidence` string is
@@ -55,4 +55,4 @@ by default, or the findings path the user names (for example
 
 The file must parse as JSON and validate against `audit/findings.schema.json`.
 Finding ids are `F01`, `F02`, … in file order then line order. `status` is
-`open` for every finding — fixing is a separate skill.
+`open` for every finding. Fixing is a separate skill.

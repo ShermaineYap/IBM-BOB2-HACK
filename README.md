@@ -21,8 +21,8 @@ anywhere near your pull requests, those are the two numbers you need.
 | Bugs Bob found | 10 of 10 | 12 of 12 |
 | False alarms | 0 | 0 |
 | Traps Bob fell for | n/a | 0 of 7 |
-| Patches that applied | 2 of 10 as written, 10 of 10 after we fixed the line numbers | _in progress_ |
-| Bobcoins | 3.49 (including one task we abandoned) | 1.01 so far |
+| Patches that applied | 2 of 10 as written, 10 of 10 after we fixed the line numbers | 12 of 12 as written |
+| Bobcoins | 3.49 (including one task we abandoned) | 3.62 |
 
 Round 1's bugs are the textbook kind: SQL built with string concatenation,
 MD5 password hashes, a hardcoded JWT secret. Round 2 is harder. It has an
@@ -38,7 +38,9 @@ in the hunk headers were wrong. We tried asking Bob to repair them. That
 didn't go well, so we stopped it and regenerated the headers with
 `git diff --no-index` (the code in the patches stayed the same). Then we
 added a rule to Bob's fix skill: a patch doesn't count until it passes
-`git apply --check`. Round 2 tells us whether that rule works.
+`git apply --check`. In round 2 all 12 patches applied first time. You
+can see in the run that several subagents caught a broken patch of their own
+and rebuilt it before handing it in, which is the rule doing its job.
 
 All the numbers above come from `scripts/score_audit.mjs`, which writes them
 to `audit/**/metrics.json`. We didn't type any of them in by hand.

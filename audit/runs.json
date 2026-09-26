@@ -49,6 +49,18 @@
       "context": "39.7k / 270k",
       "outcome": "Flagged 12 issues. All 12 were real, and it left all 7 traps alone.",
       "screenshot": "devpulse_task04_hard_mode_audit_summary.png"
+    },
+    {
+      "task": "05",
+      "round": 2,
+      "title": "Write a patch for each of the 12 issues, and check each one applies",
+      "mode": "Security Auditor (custom)",
+      "skill": "generate-fixes",
+      "subagents": "12, one per issue",
+      "bobcoins": 2.61,
+      "context": "40.8k / 270k",
+      "outcome": "All 12 patches apply. Several subagents rebuilt their own patch after checking it, before handing it in. ledger_app/ was not touched.",
+      "screenshot": "devpulse_task05_hard_mode_fixes_summary.png"
     }
   ],
   "verification": [
@@ -57,6 +69,11 @@
       "first_attempt_clean": 2,
       "after_verification_clean": 10,
       "total": 10
+    },
+    {
+      "round": 2,
+      "clean": 12,
+      "total": 12
     }
   ]
 }

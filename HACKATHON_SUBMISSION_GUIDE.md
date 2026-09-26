@@ -39,18 +39,18 @@ A script then marks everything. Bob found all 22 bugs, raised no false
 alarms, and didn't fall for any of the traps. The patches were more
 interesting: in round one Bob chose the right fix every time, but 8 of 10
 diffs wouldn't apply because the line numbers were off. We added a rule
-that every patch has to pass git apply --check, and round two shows whether
-that fixed it.
+that every patch has to pass git apply --check, and in round two all 12
+patches applied first time.
 
 Findings export as SARIF so they show up in GitHub code scanning. The website
 only displays files Bob and the scoring script wrote, and every Bob task is
 in the bob_sessions folder with what it cost. Everything so far has used
-under 6 of our 40 Bobcoins.
+about 7 of our 40 Bobcoins.
 
 ## Before you submit
 
 - [x] Findings for both rounds written by Bob
-- [ ] Round 2 fixes written by Bob and scored
+- [x] Round 2 fixes written by Bob and scored (12 of 12 apply)
 - [x] Real task session PNGs in `bob_sessions/` for every Bob task so far
 - [x] `bash scripts/check_secrets.sh` passes
 - [x] Deployed to Vercel: https://ibm-bob-2-hack.vercel.app/
@@ -87,7 +87,7 @@ Show the Scores page with the traps marked "not fooled".
 and green bars on the front page. "Bob picked the right fix every time, but
 eight of the ten patches wouldn't apply. Nobody would have noticed until
 someone tried to merge. So we made checking the patch part of Bob's job."
-Show how round two's patches did.
+"In round two, all twelve applied."
 
 **3:10 to 3:50, why it matters.** "If your team is already using AI to write
 code, the question is how much to trust it. This gives you an actual number,
@@ -95,7 +95,7 @@ on your own code. And the results go straight into GitHub's code scanning."
 
 **3:50 to 4:25, built with Bob.** Show the Bob sessions page. "Every task we
 ran is here, including the one that didn't work, and what it cost. All of
-this used about six Bobcoins." Show the `.bob` folder.
+this used about seven Bobcoins." Show the `.bob` folder.
 
 **4:25 to 4:45, wrap up.** "Next we'd run this on every pull request with Bob
 Shell. Thanks for watching." Names and the link.

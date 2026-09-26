@@ -1,4 +1,4 @@
-# Shoply API — audit target
+# Shoply API (round 1 audit target)
 
 A small, realistic Express account service. It is the codebase that DevPulse
 audits. It contains **seeded security defects** whose locations are recorded

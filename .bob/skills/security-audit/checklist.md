@@ -1,4 +1,4 @@
-# Audit checklist — OWASP ASVS 4.0 subset
+# Audit checklist: OWASP ASVS 4.0 subset
 
 Report only these classes. The `category` value is what goes in the JSON.
 This list is general-purpose: most targets will contain only a few of them.
@@ -27,7 +27,7 @@ This list is general-purpose: most targets will contain only a few of them.
 | `info-leak` | V7.1.1 / V7.4.1 | Stack traces or raw errors returned to clients; sensitive request data written to logs. |
 | `session-ttl` | V3.3.2 | Session tokens with lifetimes over 24 hours and no refresh or revocation. |
 | `redos` | V5.1.4 | Regular expressions with nested quantifiers applied to user input. |
-| `other` | — | Anything else clearly exploitable. Justify in `explanation`. Use sparingly. |
+| `other` | n/a | Anything else clearly exploitable. Justify in `explanation`. Use sparingly. |
 
 **Safe patterns are common in real code.** Before reporting, check whether the
 code already neutralises the risk (allow-list, escape, containment check,

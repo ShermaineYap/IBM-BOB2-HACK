@@ -26,7 +26,8 @@ const done = (r) => !r.m.pending;
 // ---------- helpers ----------
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const plain = (s) => String(s ?? '').replace(/\s*[\u2014\u2013]\s*/g, ', ');
+const esc = (s) => plain(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const pct = (x) => `${Math.round((x ?? 0) * 100)}%`;
 const SEV = { high: 'High', medium: 'Medium', low: 'Low' };
 const sevOrder = { high: 0, medium: 1, low: 2 };
@@ -76,7 +77,7 @@ function renderOverview() {
     { v: `${caught} of ${seeded}`, l: 'planted bugs found' },
     { v: `${fa}`, l: fa === 1 ? 'false alarm' : 'false alarms' },
     decoys ? { v: `${decoyHits} of ${decoys}`, l: 'traps it fell for' } : null,
-    { v: `${apply} of ${fixes}`, l: 'patches that apply' },
+    { v: `${apply} of ${fixes}`, l: 'patches that apply now' },
     { v: coins.toFixed(1), l: 'Bobcoins used (of 40)' },
   ].filter(Boolean);
   $('#hero-kpis').innerHTML = kpis.map((k) => `<div class="stat"><div class="stat-v">${k.v}</div><div class="stat-l">${k.l}</div></div>`).join('');
@@ -87,18 +88,20 @@ function renderOverview() {
     ? `So far this covers ${complete.map((r) => r.short.toLowerCase()).join(' and ')}. ${pendingRounds.map((r) => r.short).join(', ')} hasn't run yet.`
     : fixPending
       ? 'Both rounds combined. Round 2 patches are still being written, so the patch count only covers round 1 for now.'
-      : 'Both rounds combined.';
+      : 'Both rounds combined. The round 1 patches only applied after we fixed their line numbers; round 2 applied as Bob wrote them.';
 
   const v = runs.verification?.[0];
+  const v2 = runs.verification?.find((x) => x.round === 2);
   if (v) {
     $('#catch-broken').textContent = `${v.total - v.first_attempt_clean} of ${v.total}`;
-    const bar = (label, n, cls) => `
+    const bar = (label, n, cls, total = v.total) => `
       <div class="bar-row"><div class="bar-label">${label}</div>
-        <div class="bar"><div class="bar-fill ${cls}" style="--w:${(n / v.total) * 100}%"></div></div>
-        <div class="bar-n">${n}/${v.total}</div></div>`;
+        <div class="bar"><div class="bar-fill ${cls}" style="--w:${(n / total) * 100}%"></div></div>
+        <div class="bar-n">${n}/${total}</div></div>`;
     $('#catch-viz').innerHTML = `
-      ${bar('Applied as Bob wrote them', v.first_attempt_clean, 'bad')}
-      ${bar('After we fixed the line numbers (same code)', v.after_verification_clean, 'good')}`;
+      ${bar('Round 1, as Bob wrote them', v.first_attempt_clean, 'bad')}
+      ${bar('Round 1, after we fixed the line numbers', v.after_verification_clean, 'good')}
+      ${v2 ? bar('Round 2, with the new rule in place', v2.clean, 'good', v2.total) : ''}`;
   }
 
   const row = (r) => {
@@ -109,12 +112,12 @@ function renderOverview() {
       <td><strong>${r.short}</strong><div class="muted small">${r.label}</div></td>
       <td><code>${r.target}</code><div class="muted small">${r.blurb}</div></td>
       <td class="num">${m.seeded}</td>
-      <td class="num">${m.decoys || '—'}</td>
+      <td class="num">${m.decoys || '-'}</td>
       <td class="num">${cell(`<b>${m.caught}/${m.seeded}</b>`)}</td>
       <td class="num">${cell(String(m.false_positives))}</td>
-      <td class="num">${m.decoys ? cell(`${m.decoy_hits}/${m.decoys}`) : '—'}</td>
+      <td class="num">${m.decoys ? cell(`${m.decoy_hits}/${m.decoys}`) : '-'}</td>
       <td class="num">${done(r) && m.fixed ? `${m.fixes_apply_cleanly ?? 0}/${m.fixed}` : '<span class="muted">in progress</span>'}</td>
-      <td class="num">${coinsR ? coinsR.toFixed(2) : cell('—')}</td>
+      <td class="num">${coinsR ? coinsR.toFixed(2) : cell('-')}</td>
     </tr>`;
   };
   $('#rounds-table').innerHTML = `<thead><tr><th>Round</th><th>App</th><th class="num">Bugs</th><th class="num">Traps</th><th class="num">Found</th><th class="num">False alarms</th><th class="num">Fell for traps</th><th class="num">Patches apply</th><th class="num">Bobcoins</th></tr></thead><tbody>${ROUNDS.map(row).join('')}</tbody>`;
@@ -255,7 +258,7 @@ function renderEvidence() {
     <tr><td><b>${t.task}</b><div class="muted small">Round ${t.round}</div></td>
       <td>${esc(t.title)}${url(t.screenshot) ? `<div><button class="link small" data-shot="${esc(t.screenshot)}">see screenshot</button></div>` : ''}</td>
       <td>${esc(t.mode)}${t.skill ? `<div class="muted small">${esc(t.skill)}</div>` : ''}</td>
-      <td class="small">${esc(t.subagents ?? '—')}</td>
+      <td class="small">${esc(t.subagents ?? '-')}</td>
       <td class="num"><b>${t.bobcoins.toFixed(3)}</b><div class="muted small">${esc(t.context ?? '')}</div></td>
       <td class="small">${esc(t.outcome)}</td></tr>`).join('')}
     <tr class="total"><td colspan="4">Total</td><td class="num"><b>${runs.tasks.reduce((a, t) => a + t.bobcoins, 0).toFixed(3)}</b><div class="muted small">of 40</div></td><td></td></tr></tbody>`;

@@ -1,4 +1,4 @@
-# .bobrules — DevPulse
+# .bobrules for DevPulse
 
 See .bob/rules/devpulse.md for the full rules. In short:
 - sample_app/ stays vulnerable; fixes are diffs under audit/fixes/

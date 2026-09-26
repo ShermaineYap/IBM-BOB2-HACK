@@ -1,4 +1,4 @@
-# bob_sessions/ — mandatory submission deliverable
+# bob_sessions/
 
 This folder holds the **real** IBM Bob IDE task session consumption summary
 screenshots for every Bob task that produced this project. Nothing else goes
@@ -8,7 +8,7 @@ here, and nothing in here is generated or mocked.
 
 1. In Bob IDE, open the chat panel and click **Tasks**.
 2. Select the task.
-3. Click the **task header** — the Task Session Consumption Summary opens.
+3. Click the **task header**. The Task Session Consumption Summary opens.
 4. Screenshot it. PNG only.
 5. Save it here as `devpulse_taskNN_<short-description>_summary.png`, e.g.
    `devpulse_task01_seed_sample_app_summary.png`.

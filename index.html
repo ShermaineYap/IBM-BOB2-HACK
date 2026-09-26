@@ -33,7 +33,7 @@
       <div class="wrap intro">
         <p class="kicker">IBM Bob 2.0 Hackathon · September 2026</p>
         <h1>We hid <span id="h-total">22</span> security bugs in two small apps and asked IBM Bob to find them.</h1>
-        <p class="lede" id="lede">It found every one of them, didn't raise a single false alarm, and ignored all seven traps we set for it. The fixes were a different story. This site shows what happened, file by file.</p>
+        <p class="lede" id="lede">It found every one of them, didn't raise a single false alarm, and ignored all seven traps we set for it. The fixes took two tries to get right. This site shows what happened, file by file.</p>
         <div class="cta-row">
           <button class="btn btn-primary" data-go="findings">Look at the findings</button>
           <button class="btn" data-go="how">How we tested it</button>
@@ -55,7 +55,8 @@
           <h3>What we learned from round 1</h3>
           <p>Bob's fixes were the right ones. Parameterised queries, bcrypt, rate limiting, a proper admin check. But when we tried to apply the patches, <strong id="catch-broken">8 of 10</strong> failed because the line numbers in the diff headers were off.</p>
           <div id="catch-viz"></div>
-          <p>Nobody would have noticed until a developer tried to merge them. So we added a rule to Bob's fix skill: every patch has to pass <code>git apply --check</code> before it counts. Round 2 is where we find out if that worked.</p>
+          <p>Nobody would have noticed until a developer tried to merge them. So we added a rule to Bob's fix skill: every patch has to pass <code>git apply --check</code> before it counts.</p>
+          <p>It worked. In round 2 all 12 patches applied as Bob handed them in. Watching the run, you can see several subagents check their patch, find it broken, and rebuild it before reporting back.</p>
         </div>
       </div>
 

@@ -190,7 +190,7 @@
           "ruleId": "prototype-pollution",
           "level": "error",
           "message": {
-            "text": "Prototype pollution in deepMerge — no __proto__/constructor guard. deepMerge iterates all keys of the untrusted source object and recursively assigns them to target with no guard for __proto__, constructor, or prototype. An attacker who controls the preferences body can pollute Object.prototype, injecting arbitrary properties onto every object in the process."
+            "text": "Prototype pollution in deepMerge, no __proto__/constructor guard. deepMerge iterates all keys of the untrusted source object and recursively assigns them to target with no guard for __proto__, constructor, or prototype. An attacker who controls the preferences body can pollute Object.prototype, injecting arbitrary properties onto every object in the process."
           },
           "locations": [
             {
@@ -213,7 +213,8 @@
           "properties": {
             "security-severity": "8.0",
             "asvs": "V5.1.5",
-            "status": "open"
+            "status": "fixed",
+            "fixDiff": "audit/hard/fixes/F01.diff"
           }
         },
         {
@@ -243,7 +244,8 @@
           "properties": {
             "security-severity": "8.0",
             "asvs": "V6.3.1",
-            "status": "open"
+            "status": "fixed",
+            "fixDiff": "audit/hard/fixes/F02.diff"
           }
         },
         {
@@ -273,7 +275,8 @@
           "properties": {
             "security-severity": "8.0",
             "asvs": "V3.5.3",
-            "status": "open"
+            "status": "fixed",
+            "fixDiff": "audit/hard/fixes/F03.diff"
           }
         },
         {
@@ -303,7 +306,8 @@
           "properties": {
             "security-severity": "5.0",
             "asvs": "V2.9.1",
-            "status": "open"
+            "status": "fixed",
+            "fixDiff": "audit/hard/fixes/F04.diff"
           }
         },
         {
@@ -333,7 +337,8 @@
           "properties": {
             "security-severity": "5.0",
             "asvs": "V5.1.4",
-            "status": "open"
+            "status": "fixed",
+            "fixDiff": "audit/hard/fixes/F05.diff"
           }
         },
         {
@@ -363,7 +368,8 @@
           "properties": {
             "security-severity": "8.0",
             "asvs": "V5.1.2",
-            "status": "open"
+            "status": "fixed",
+            "fixDiff": "audit/hard/fixes/F06.diff"
           }
         },
         {
@@ -393,14 +399,15 @@
           "properties": {
             "security-severity": "5.0",
             "asvs": "V5.1.5",
-            "status": "open"
+            "status": "fixed",
+            "fixDiff": "audit/hard/fixes/F07.diff"
           }
         },
         {
           "ruleId": "path-traversal",
           "level": "error",
           "message": {
-            "text": "Path traversal in /files/download/:name — no basename or containment check. req.params.name is joined directly to the upload directory with no basename() stripping or resolved-prefix containment check. An authenticated attacker can request ../../etc/passwd to read arbitrary files on the server."
+            "text": "Path traversal in /files/download/:name, no basename or containment check. req.params.name is joined directly to the upload directory with no basename() stripping or resolved-prefix containment check. An authenticated attacker can request ../../etc/passwd to read arbitrary files on the server."
           },
           "locations": [
             {
@@ -423,14 +430,15 @@
           "properties": {
             "security-severity": "8.0",
             "asvs": "V12.3.1",
-            "status": "open"
+            "status": "fixed",
+            "fixDiff": "audit/hard/fixes/F08.diff"
           }
         },
         {
           "ruleId": "ssrf",
           "level": "error",
           "message": {
-            "text": "SSRF in /webhooks/test — user-supplied URL fetched without allow-list. The URL comes from req.body.url with no allow-list or scheme restriction. An authenticated attacker can make the server probe internal services (e.g. http://169.254.169.254/latest/meta-data/) or arbitrary external endpoints."
+            "text": "SSRF in /webhooks/test, user-supplied URL fetched without allow-list. The URL comes from req.body.url with no allow-list or scheme restriction. An authenticated attacker can make the server probe internal services (e.g. http://169.254.169.254/latest/meta-data/) or arbitrary external endpoints."
           },
           "locations": [
             {
@@ -453,14 +461,15 @@
           "properties": {
             "security-severity": "8.0",
             "asvs": "V12.6.1",
-            "status": "open"
+            "status": "fixed",
+            "fixDiff": "audit/hard/fixes/F09.diff"
           }
         },
         {
           "ruleId": "missing-authz",
           "level": "error",
           "message": {
-            "text": "IDOR in GET /invoices/:id — no owner_id check. The query fetches any invoice by ID without verifying that it belongs to the requesting user. Any authenticated user can enumerate all invoices by iterating IDs, leaking all customer names and amounts."
+            "text": "IDOR in GET /invoices/:id, no owner_id check. The query fetches any invoice by ID without verifying that it belongs to the requesting user. Any authenticated user can enumerate all invoices by iterating IDs, leaking all customer names and amounts."
           },
           "locations": [
             {
@@ -483,7 +492,8 @@
           "properties": {
             "security-severity": "8.0",
             "asvs": "V4.2.1",
-            "status": "open"
+            "status": "fixed",
+            "fixDiff": "audit/hard/fixes/F10.diff"
           }
         },
         {
@@ -513,7 +523,8 @@
           "properties": {
             "security-severity": "5.0",
             "asvs": "V7.4.1",
-            "status": "open"
+            "status": "fixed",
+            "fixDiff": "audit/hard/fixes/F11.diff"
           }
         },
         {
@@ -543,7 +554,8 @@
           "properties": {
             "security-severity": "8.0",
             "asvs": "V5.3.8",
-            "status": "open"
+            "status": "fixed",
+            "fixDiff": "audit/hard/fixes/F12.diff"
           }
         }
       ]
