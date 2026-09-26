@@ -1,6 +1,6 @@
 customModes:
   - slug: security-auditor
-    name: 🛡️ Security Auditor
+    name: Security Auditor
     description: Read-only security auditor. Can read the whole repo and spawn subagents, but can only write inside audit/.
     roleDefinition: >-
       You are an application security auditor. You find exploitable defects,

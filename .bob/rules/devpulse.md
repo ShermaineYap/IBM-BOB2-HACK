@@ -4,7 +4,7 @@
   mode with decoys). Both are kept deliberately vulnerable. Never fix a target
   in place — fixes go to the round's `fixes/` folder as diffs.
 - Never read any `ground_truth.json` file. They are answer keys.
-- Use the 🛡️ Security Auditor mode (`.bob/custom_modes.yaml`) for audits: it
+- Use the Security Auditor mode (`.bob/custom_modes.yaml`) for audits: it
   can only write under `audit/`.
 - Findings and fixes are written to files under `audit/`, in the formats the
   skills define. Do not put findings in chat only.

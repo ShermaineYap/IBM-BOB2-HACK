@@ -1,135 +1,134 @@
-# DevPulse — don't trust an AI security audit. Measure it.
+# DevPulse
 
-**Live demo:** https://ibm-bob-2-hack.vercel.app/ · **Video:** _(link)_ · **Built for** the IBM Bob 2.0 Hackathon, 25–27 September 2026
+**Live site:** https://ibm-bob-2-hack.vercel.app/ · **Video:** _(link)_
 
-DevPulse turns **IBM Bob 2.0** into a security auditor whose work is
-**scored against a hidden answer key** and whose fixes are **proven to apply**
-before anyone merges them.
+We hid 22 security bugs in two small Express apps, asked IBM Bob 2.0 to find
+and fix them, and graded its work against an answer key it never saw.
 
-Most AI code-review demos show a scan that finds everything. That proves
-nothing, because nobody can see what it missed or how often it cries wolf.
-DevPulse seeds a real codebase with known defects *and decoys*, has Bob audit
-and fix it as a multi-step agent, then measures recall, precision, decoy hits
-and whether every fix actually applies.
+We built this for the IBM Bob 2.0 Hackathon (September 2026) because every AI
+code review demo we'd seen had the same gap. The tool lists a bunch of
+problems and everyone nods, but nobody knows what it missed or how many of
+those problems were real. If you're deciding whether to let an AI reviewer
+anywhere near your pull requests, those are the two numbers you need.
 
-## Results
+## What happened
 
-Every number below is computed by `scripts/score_audit.mjs` and stored in
-`audit/**/metrics.json`. Nothing is hand-entered.
-
-| | Round 1 — Baseline | Round 2 — Hard mode |
+| | Round 1 (warm-up) | Round 2 (hard) |
 | --- | --- | --- |
-| Target | `sample_app/` — Express account API | `ledger_app/` — invoicing & file API |
-| Seeded defects | 10 (SQLi, XSS, MD5, hardcoded secret…) | 12 (IDOR, `jwt.decode` bypass, SSRF, path traversal, command injection, prototype pollution, mass assignment, ReDoS…) |
-| Decoys (safe code that looks unsafe) | 0 | 7 |
-| **Caught (recall)** | **10 / 10** | **12 / 12** |
-| **False positives (precision)** | **0 — 100%** | **0 — 100%** |
-| **Decoys Bob wrongly flagged** | — | **0 / 7** |
-| Fixes that pass `git apply --check` | 2 / 10 as first written → 10 / 10 after hunk headers regenerated | _pending_ |
-| Bob mode | Agent | 🛡️ Security Auditor (custom mode) |
-| Subagents | 7 explore (audit) · 10 general (fixes) | 6 explore (audit) · _pending_ |
-| Bobcoins | 0.668 audit · 1.09 fixes · 1.73 stopped repair | 1.01 audit · _pending_ |
+| App | `sample_app/`, a login and user API | `ledger_app/`, an invoicing and file API |
+| Bugs we planted | 10 | 12 |
+| Traps (safe code that looks risky) | none | 7 |
+| Bugs Bob found | 10 of 10 | 12 of 12 |
+| False alarms | 0 | 0 |
+| Traps Bob fell for | n/a | 0 of 7 |
+| Patches that applied | 2 of 10 as written, 10 of 10 after we fixed the line numbers | _in progress_ |
+| Bobcoins | 3.49 (including one task we abandoned) | 1.01 so far |
 
-**The finding that matters most is the fix row.** In round 1 every fix Bob
-wrote was the right remedy, but 8 of 10 diffs had wrong hunk line counts and
-would not have applied. The `git apply --check` step caught it. The headers
-were regenerated mechanically from Bob's own edits (content unchanged) and the
-lesson went back into the `generate-fixes` skill as a mandatory self-check
-before Bob may mark anything fixed. Round 2 tests whether that holds.
+Round 1's bugs are the textbook kind: SQL built with string concatenation,
+MD5 password hashes, a hardcoded JWT secret. Round 2 is harder. It has an
+IDOR on invoices, an admin check that uses `jwt.decode` instead of
+`jwt.verify`, SSRF, path traversal, command injection, prototype pollution,
+mass assignment and a regex that can be made to hang. It also has seven traps,
+like a SQL `ORDER BY` built from a template string that's actually safe
+because the column comes from a fixed list.
+
+The part we didn't expect was the patches. In round 1 Bob picked the right
+fix every time, but 8 of its 10 diffs wouldn't apply because the line counts
+in the hunk headers were wrong. We tried asking Bob to repair them. That
+didn't go well, so we stopped it and regenerated the headers with
+`git diff --no-index` (the code in the patches stayed the same). Then we
+added a rule to Bob's fix skill: a patch doesn't count until it passes
+`git apply --check`. Round 2 tells us whether that rule works.
+
+All the numbers above come from `scripts/score_audit.mjs`, which writes them
+to `audit/**/metrics.json`. We didn't type any of them in by hand.
 
 ## How it works
 
-```
-Seed ──► Audit (Bob) ──► Fix (Bob) ──► Verify ──► Score ──► Dashboard + SARIF
-```
+1. **We plant the bugs.** Each app has an answer key in
+   `audit/**/ground_truth.json`. Bob's rules tell it not to open those files,
+   and `.bobignore` hides them from it anyway.
+2. **Bob audits.** It runs in a custom Security Auditor mode
+   (`.bob/custom_modes.yaml`) that can read the whole repo but can only save
+   files under `audit/`. The `security-audit` skill gives each file its own
+   read-only subagent, runs them in parallel, then merges the results and
+   re-reads every line it's about to report.
+3. **Bob fixes.** The `generate-fixes` skill gives each finding its own
+   subagent, which writes a small patch and checks it applies.
+4. **A script marks it.** A finding counts if it names the right kind of bug
+   in the right file, within three lines of where we put it. Everything else
+   is a false alarm. The script also tries every patch.
+5. **The results go somewhere useful.** `scripts/to_sarif.mjs` turns the
+   findings into a SARIF file that GitHub code scanning can read, and the
+   website shows the same data.
 
-1. **Seed.** Each target has an answer key (`audit/**/ground_truth.json`) that
-   lists every planted defect and every decoy. Bob is told never to read it,
-   and `.bobignore` removes it from Bob's context anyway.
-2. **Audit.** In the **🛡️ Security Auditor** custom mode, Bob runs the
-   `security-audit` skill: one read-only *explore* subagent per source file,
-   in parallel, checking a 23-class OWASP ASVS checklist. Bob merges the
-   candidates, re-reads every evidence line, and writes `findings.json`.
-3. **Fix.** The `generate-fixes` skill spawns one *general* subagent per
-   finding (`fork_context: false`). Each returns a minimal unified diff; Bob
-   must pass `git apply --check` before marking it fixed. Targets are never
-   modified.
-4. **Score.** `node scripts/score_audit.mjs <round>` matches findings to the
-   answer key (same category, same file, line ±3), reports recall, precision
-   and decoy hits, and re-checks every diff.
-5. **Ship.** `node scripts/to_sarif.mjs <round>` exports SARIF 2.1.0 for
-   GitHub code scanning. The dashboard renders the same files.
+### The Bob features we leaned on
 
-### IBM Bob 2.0 features used
+- **A custom mode** that physically can't edit the apps it's auditing
+- **Subagents** running in parallel, one per file for audits and one per
+  finding for fixes
+- **Skills** so Bob follows the same checklist and output format every time
+- **Rules** and **AGENTS.md** for project context
+- **`.bobignore`** to keep the answer keys out of Bob's context
+- **Task summaries** for every run, saved in `bob_sessions/`
 
-| Feature | Where |
-| --- | --- |
-| **Custom mode** — read everything, write only `^audit/.*\.(json\|diff)$` | `.bob/custom_modes.yaml` |
-| **Agent mode + parallel subagents** — explore per file, general per fix | both skills |
-| **Skills** — reusable audit and fix workflows with checklist, severity guide, output contract | `.bob/skills/` |
-| **Custom rules** — targets are read-only, never read answer keys | `.bob/rules/devpulse.md`, `.bobrules` |
-| **AGENTS.md** — persistent project context | `AGENTS.md` |
-| **.bobignore** — answer keys and metrics kept out of context | `.bobignore` |
-| **Task session evidence** — every task, with Bobcoin cost | `bob_sessions/`, `audit/runs.json` |
+## If you're judging
 
-## For judges — where to look
+- **How Bob is used:** Bob does the auditing and the fixing. Our code only
+  sets up the test and marks it. See `.bob/` and the *How it works* page.
+- **Presentation:** the live site has a short "if you only have a minute"
+  list on the front page.
+- **Why it's useful:** teams already using AI to write code need a way to
+  decide how far to trust it. This gives them a hit rate on their own code,
+  and the findings drop straight into GitHub.
+- **What's new here:** the audit itself isn't the point. Grading it is. The
+  traps measure false alarms, and checking the patches caught a real problem
+  in round 1.
 
-| Criterion | Evidence |
-| --- | --- |
-| **Application of technology** | Bob is the auditor and the fixer, not a code generator: custom mode, two skills, parallel subagents, rules. See the *How Bob does it* tab and `.bob/`. Every task is in `bob_sessions/`. |
-| **Presentation** | Live dashboard with a 60-second tour; 5-minute video; README results table. |
-| **Business value** | Teams that bought AI coding can't certify its output. DevPulse gives a recall/precision number on *their* code before an AI reviewer gates a release, and ships findings as SARIF into GitHub code scanning. |
-| **Originality** | The audit is not the product — the *measurement* is. Hidden answer keys, decoys to measure false alarms, and patch verification turn "the AI found stuff" into a benchmark. The verify step caught Bob's broken diffs in round 1. |
-
-## Reproduce
+## Run it yourself
 
 ```bash
 git clone https://github.com/ShermaineYap/IBM-BOB2-HACK && cd IBM-BOB2-HACK
 npm install
 
-# In Bob IDE, 🛡️ Security Auditor mode:
-#   "Run the security-audit skill on ledger_app/, write audit/hard/findings.json"
+# In Bob IDE, switch to the Security Auditor mode, then ask:
+#   "Run the security-audit skill on ledger_app/ and write audit/hard/findings.json"
 #   "Run the generate-fixes skill on audit/hard/findings.json"
 
-node scripts/score_audit.mjs audit/hard   # recall, precision, decoys, fixes that apply
-node scripts/to_sarif.mjs audit/hard      # SARIF for GitHub code scanning
-npm run dev                               # dashboard at http://localhost:5173
+node scripts/score_audit.mjs audit/hard
+node scripts/to_sarif.mjs audit/hard
+npm run dev
 ```
 
-## Repository layout
+## What's in the repo
 
 ```
-.bob/custom_modes.yaml        🛡️ Security Auditor mode
-.bob/skills/security-audit/   audit workflow, 23-class checklist, severity guide
-.bob/skills/generate-fixes/   one-diff-per-finding workflow with self-verification
-.bob/rules/                   project rules Bob loads automatically
-sample_app/                   round 1 target (10 seeded defects)
-ledger_app/                   round 2 target (12 subtle defects + 7 decoys)
-audit/                        round 1: ground truth, findings, fixes, metrics, SARIF
-audit/hard/                   round 2: same structure
-audit/runs.json               every Bob task: mode, subagents, Bobcoins, outcome
-scripts/score_audit.mjs       scorer (recall, precision, decoys, git apply --check)
-scripts/to_sarif.mjs          SARIF 2.1.0 exporter
-bob_sessions/                 task session summary screenshots (mandatory deliverable)
-index.html, src/              the dashboard (Vite, vanilla JS)
+.bob/                  Bob's custom mode, skills and rules
+sample_app/            round 1 app
+ledger_app/            round 2 app
+audit/                 round 1 answer key, findings, patches, scores, SARIF
+audit/hard/            same for round 2
+audit/runs.json        every Bob task we ran and what it cost
+scripts/               the scoring and SARIF scripts
+bob_sessions/          screenshots of each Bob task summary
+index.html, src/       the website
 ```
 
-## Data
+## About the data
 
-Both targets and all answer keys were written for this project. No external,
-client, personal or social-media data is used. Secrets in the targets are
-fake and deliberate (they are the defects).
+We wrote both apps and both answer keys ourselves. There's no client data,
+personal data or anything scraped. The "secrets" in the apps are fake and are
+there on purpose.
 
-## Roadmap
+## What we'd do next
 
-Run as a pull-request check via Bob Shell's non-interactive mode; let teams
-seed their own answer keys to benchmark AI reviewers on their stack; track
-recall and precision across Bob versions.
+Run it on every pull request using Bob Shell's non-interactive mode, and let
+teams plant their own bugs so they can test an AI reviewer on their own stack.
 
 ## Team
 
-Shermaine Yap · Caiting
+Shermaine Yap and Caiting.
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

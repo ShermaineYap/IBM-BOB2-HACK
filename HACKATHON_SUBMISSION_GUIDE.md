@@ -1,45 +1,51 @@
-# Submission — values and checklist
+# Submission notes
 
 ## lablab.ai form
 
 | Field | Value |
 | --- | --- |
-| Project title | DevPulse — Don't trust an AI security audit. Measure it. |
-| Short description | IBM Bob 2.0 audits and fixes seeded codebases in a custom Security Auditor mode with parallel subagents; DevPulse scores it against a hidden answer key with decoys and verifies every fix applies. 22/22 defects, 0 false positives, 0/7 decoys flagged. |
+| Project title | DevPulse: grading IBM Bob as a security auditor |
+| Short description | We hid 22 security bugs and 7 traps in two apps, had IBM Bob find and fix them, and marked its work against an answer key it never saw. It found all 22 with no false alarms. |
 | Technology tags | IBM Bob IDE 2.0, JavaScript, Node.js, Express, Vite, OWASP ASVS, SARIF |
-| Category | Developer tools · Code review · DevSecOps |
+| Category | Developer tools · Code review · Security |
 | Demo platform | Vercel |
 | Application URL | https://ibm-bob-2-hack.vercel.app/ |
 | Repository | https://github.com/ShermaineYap/IBM-BOB2-HACK |
-| Video | _(MP4, ≤ 5 min)_ |
+| Video | _(MP4, 5 min max)_ |
 | Slides | _(PDF)_ |
-| Cover image | 16:9 PNG of the Overview page |
+| Cover image | 16:9 screenshot of the site's front page |
 
 ## Long description (paste)
 
-Every AI code-review demo shows a scan that finds everything. That proves
-nothing, because you can't see what it missed or how often it cries wolf.
-DevPulse measures instead.
+Every AI code review demo we've watched goes the same way. The tool lists
+some problems, everyone's impressed, and nobody asks what it missed or how
+many of those problems were real. Those are exactly the things you need to
+know before you let an AI reviewer anywhere near your releases.
 
-We seed real Express codebases with known OWASP ASVS defects — and, in hard
-mode, with decoys: code that looks dangerous but is safe. The answer key is
-hidden from Bob. IBM Bob 2.0 then works as a multi-step agent inside a custom
-🛡️ Security Auditor mode that can read everything but only write under
-audit/. A project skill fans out one read-only explore subagent per file in
-parallel, merges and re-verifies every evidence line, and writes structured
-findings. A second skill spawns one general subagent per finding to write a
-minimal fix diff that must pass git apply --check.
+So we tested IBM Bob like an exam. We wrote two small Express apps and hid
+security bugs in them: 10 obvious ones in the first, 12 subtler ones in the
+second (an IDOR, an admin check using jwt.decode instead of jwt.verify, SSRF,
+path traversal, command injection, prototype pollution and more). The second
+app also has seven traps, bits of code that look dangerous but are fine. The
+answer keys are hidden from Bob.
 
-A scorer compares Bob's output with the answer key. Results: round 1, 10/10
-defects with no false positives; round 2 (hard mode), 12/12 including IDOR,
-jwt.decode auth bypass, SSRF, path traversal, command injection and prototype
-pollution — with 0 false positives and none of the 7 decoys flagged.
+Bob does the actual work. We gave it a custom Security Auditor mode that can
+read the whole project but can only write to the audit folder, so it can't
+touch the code it's checking. A skill splits the audit across subagents, one
+per file, running in parallel, and Bob writes its findings to JSON. A second
+skill gives each finding to its own subagent to write a patch.
 
-The most useful moment came from the verification step: in round 1 every fix
-Bob wrote was the right remedy, but 8 of 10 diffs would not apply. DevPulse
-caught it, and the rule went back into the Bob skill. Findings export as
-SARIF for GitHub code scanning, and the dashboard renders only files Bob and
-the scorer wrote. All Bob tasks, with Bobcoin cost, are in bob_sessions/.
+A script then marks everything. Bob found all 22 bugs, raised no false
+alarms, and didn't fall for any of the traps. The patches were more
+interesting: in round one Bob chose the right fix every time, but 8 of 10
+diffs wouldn't apply because the line numbers were off. We added a rule
+that every patch has to pass git apply --check, and round two shows whether
+that fixed it.
+
+Findings export as SARIF so they show up in GitHub code scanning. The website
+only displays files Bob and the scoring script wrote, and every Bob task is
+in the bob_sessions folder with what it cost. Everything so far has used
+under 6 of our 40 Bobcoins.
 
 ## Before you submit
 
@@ -49,58 +55,61 @@ the scorer wrote. All Bob tasks, with Bobcoin cost, are in bob_sessions/.
 - [x] `bash scripts/check_secrets.sh` passes
 - [x] Deployed to Vercel: https://ibm-bob-2-hack.vercel.app/
 - [x] Repo is public, MIT LICENSE present
-- [ ] Video ≤ 5 min, MP4
+- [ ] Video, 5 min max, MP4
 - [ ] Slides PDF
 - [ ] Cover image 16:9
 - [ ] Submit by ~7 PM Sunday (deadline 11 PM MYT)
 - [ ] After results: fill in the lablab feedback form (participant reward)
 
-## Video script — 4:45
+## Video script (about 4:45)
 
-**0:00–0:25 — Problem.** "Every AI security demo shows a scan that finds
-everything. That tells you nothing — you can't see what it missed, or how
-often it cries wolf. We wanted a number you could trust before letting an AI
-gate your releases."
+Talk like you're explaining it to a friend. These are notes, not lines to
+read word for word.
 
-**0:25–0:50 — Setup.** Show `ledger_app/`. "A real invoicing API. We planted
-twelve subtle vulnerabilities — and seven decoys, code that looks dangerous
-but is safe. The answer key is hidden from Bob."
+**0:00 to 0:25, the problem.** "Every AI code review demo looks great. It
+finds a bunch of stuff. But you never find out what it missed, or how many of
+those were real. That's what we wanted to know about Bob."
 
-**0:50–1:50 — Bob audits.** Screen-record Bob IDE. Show the 🛡️ Security
-Auditor mode: "It can read everything, but it can only write under audit/ —
-the auditor can't touch the code it audits." Run the skill; show six explore
-subagents fanning out in parallel; show findings.json appear.
+**0:25 to 0:50, the setup.** Show `ledger_app/`. "This is a small invoicing
+API. We hid twelve bugs in it, and seven traps, code that looks risky but
+isn't. Bob doesn't get to see the answer key."
 
-**1:50–2:20 — Score.** Run `node scripts/score_audit.mjs audit/hard`. Read the
-numbers aloud: 12 of 12, zero false positives, zero decoys flagged. Show the
-Benchmark tab with the decoys marked "left alone".
+**0:50 to 1:50, Bob audits.** Screen-record Bob IDE. Point at the Security
+Auditor mode: "It can read everything, but it can only write to this one
+folder, so it can't touch the app." Run the skill. Let the subagents show up
+in the panel. Show the findings file appear.
 
-**2:20–3:10 — The catch.** "Round one taught us something." Show the Overview
-bar: 2 of 10 fixes applied as first written. "Every fix was the right remedy —
-but the patches were broken. Without verification, that's an afternoon of
-rework the AI was supposed to save. So verification became a rule inside the
-Bob skill." Show round 2's fix result.
+**1:50 to 2:20, the score.** Run `node scripts/score_audit.mjs audit/hard`.
+"Twelve out of twelve. No false alarms. It didn't fall for any of the traps."
+Show the Scores page with the traps marked "not fooled".
 
-**3:10–3:50 — Why it matters.** "Engineering leads bought AI code generation.
-What they can't do is certify it. DevPulse gives them recall and precision on
-their own code, and ships findings as SARIF straight into GitHub code
-scanning."
+**2:20 to 3:10, the patches.** "Round one taught us something." Show the red
+and green bars on the front page. "Bob picked the right fix every time, but
+eight of the ten patches wouldn't apply. Nobody would have noticed until
+someone tried to merge. So we made checking the patch part of Bob's job."
+Show how round two's patches did.
 
-**3:50–4:25 — Built with Bob.** Evidence tab: every task, its Bobcoin cost —
-under six Bobcoins for everything. Show `.bob/` — custom mode, two skills,
-rules.
+**3:10 to 3:50, why it matters.** "If your team is already using AI to write
+code, the question is how much to trust it. This gives you an actual number,
+on your own code. And the results go straight into GitHub's code scanning."
 
-**4:25–4:45 — Close.** "Next: run it on every pull request with Bob Shell.
-DevPulse — don't trust an AI security audit, measure it." Team names, URL.
+**3:50 to 4:25, built with Bob.** Show the Bob sessions page. "Every task we
+ran is here, including the one that didn't work, and what it cost. All of
+this used about six Bobcoins." Show the `.bob` folder.
 
-## Slides — 9, PDF, ≤ 25 words each
+**4:25 to 4:45, wrap up.** "Next we'd run this on every pull request with Bob
+Shell. Thanks for watching." Names and the link.
 
-1. DevPulse — Don't trust an AI security audit. Measure it.
-2. The problem: demos that find everything prove nothing
-3. The method: seed defects + decoys, hide the answer key
-4. Bob as auditor: custom mode, skills, parallel subagents (diagram)
-5. Round 2 results: 12/12, 0 false positives, 0/7 decoys
-6. The catch: 2/10 fixes applied → verification became a Bob rule
-7. Who pays and why: certify AI output; SARIF into GitHub
-8. Built with Bob: tasks, Bobcoins, `.bob/` config
-9. Roadmap, team, links
+## Slides (9, PDF)
+
+Keep each slide to one idea and very few words.
+
+1. DevPulse: grading IBM Bob as a security auditor
+2. AI review demos never tell you what they missed
+3. So we hid 22 bugs and 7 traps, and kept the answer key
+4. How Bob does the work: custom mode, skills, subagents
+5. Round 2: 12 of 12 found, no false alarms, no traps triggered
+6. Round 1's surprise: right fixes, broken patches
+7. Who'd use this, and how it plugs into GitHub
+8. What it cost: every Bob task and its Bobcoins
+9. What's next, who we are, links

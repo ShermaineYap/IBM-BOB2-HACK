@@ -1,4 +1,4 @@
-// DevPulse dashboard. Renders only what Bob and the scorer wrote — no AI runs here.
+// DevPulse site. It only reads files that Bob and the scoring script wrote.
 import './app.css';
 
 import r1Findings from '../audit/findings.json';
@@ -18,8 +18,8 @@ const diffs = import.meta.glob(['../audit/fixes/*.diff', '../audit/hard/fixes/*.
 const shots = import.meta.glob('../bob_sessions/*.png', { import: 'default', eager: true });
 
 const ROUNDS = [
-  { key: 'r1', short: 'Round 1', label: 'Baseline', target: 'sample_app/', blurb: 'Express account API · obvious OWASP defects', f: r1Findings, m: r1Metrics, gt: r1Truth, sarif: r1Sarif },
-  { key: 'r2', short: 'Round 2', label: 'Hard mode', target: 'ledger_app/', blurb: 'Invoicing API · subtle defects + decoys', f: r2Findings, m: r2Metrics, gt: r2Truth, sarif: r2Sarif },
+  { key: 'r1', short: 'Round 1', label: 'Warm-up', target: 'sample_app/', blurb: 'Login and user API, fairly obvious bugs', f: r1Findings, m: r1Metrics, gt: r1Truth, sarif: r1Sarif },
+  { key: 'r2', short: 'Round 2', label: 'Hard', target: 'ledger_app/', blurb: 'Invoicing API, subtler bugs plus traps', f: r2Findings, m: r2Metrics, gt: r2Truth, sarif: r2Sarif },
 ];
 const done = (r) => !r.m.pending;
 
@@ -47,7 +47,7 @@ function go(tab, push = true) {
   if (tab === 'how' && !mermaidDone) {
     mermaidDone = true;
     import('mermaid').then(({ default: mermaid }) => {
-      mermaid.initialize({ startOnLoad: false, theme: 'dark', themeVariables: { fontFamily: 'IBM Plex Sans', background: '#0b0d12', lineColor: '#6f7a90' } });
+      mermaid.initialize({ startOnLoad: false, theme: 'neutral', themeVariables: { fontFamily: 'IBM Plex Sans', lineColor: '#8d8d8d' } });
       mermaid.run({ nodes: [$('#pipeline')] });
     });
   }
@@ -71,18 +71,23 @@ function renderOverview() {
   const decoyHits = complete.reduce((a, r) => a + (r.m.decoy_hits ?? 0), 0);
   const coins = runs.tasks.reduce((a, t) => a + (t.bobcoins ?? 0), 0);
 
+  const fa = reported - caught;
   const kpis = [
-    { v: `${caught}<small>/${seeded}</small>`, l: 'seeded defects caught', s: `recall ${pct(seeded ? caught / seeded : 0)}` },
-    { v: pct(reported ? caught / reported : 0), l: 'precision', s: `${reported - caught} false alarm${reported - caught === 1 ? '' : 's'}` },
-    decoys ? { v: `${decoys - decoyHits}<small>/${decoys}</small>`, l: 'decoys Bob left alone', s: 'safe code that looks unsafe' } : null,
-    { v: `${apply}<small>/${fixes}</small>`, l: 'fixes verified to apply', s: 'git apply --check' },
-    { v: coins.toFixed(2), l: 'Bobcoins, all tasks', s: `of 40 · ${runs.tasks.length} Bob tasks` },
+    { v: `${caught} of ${seeded}`, l: 'planted bugs found' },
+    { v: `${fa}`, l: fa === 1 ? 'false alarm' : 'false alarms' },
+    decoys ? { v: `${decoyHits} of ${decoys}`, l: 'traps it fell for' } : null,
+    { v: `${apply} of ${fixes}`, l: 'patches that apply' },
+    { v: coins.toFixed(1), l: 'Bobcoins used (of 40)' },
   ].filter(Boolean);
-  $('#hero-kpis').innerHTML = kpis.map((k) => `<div class="kpi"><div class="kpi-v">${k.v}</div><div class="kpi-l">${k.l}</div><div class="kpi-s">${k.s}</div></div>`).join('');
+  $('#hero-kpis').innerHTML = kpis.map((k) => `<div class="stat"><div class="stat-v">${k.v}</div><div class="stat-l">${k.l}</div></div>`).join('');
+  $('#h-total').textContent = String(ROUNDS.reduce((a, r) => a + r.gt.defects.length, 0));
   const pendingRounds = ROUNDS.filter((r) => !done(r));
+  const fixPending = complete.some((r) => r.m.fixed === 0);
   $('#hero-note').textContent = pendingRounds.length
-    ? `Totals cover ${complete.map((r) => r.short).join(' + ')}. ${pendingRounds.map((r) => r.short).join(', ')} pending.`
-    : `Totals across ${complete.length} benchmark rounds.`;
+    ? `So far this covers ${complete.map((r) => r.short.toLowerCase()).join(' and ')}. ${pendingRounds.map((r) => r.short).join(', ')} hasn't run yet.`
+    : fixPending
+      ? 'Both rounds combined. Round 2 patches are still being written, so the patch count only covers round 1 for now.'
+      : 'Both rounds combined.';
 
   const v = runs.verification?.[0];
   if (v) {
@@ -92,29 +97,27 @@ function renderOverview() {
         <div class="bar"><div class="bar-fill ${cls}" style="--w:${(n / v.total) * 100}%"></div></div>
         <div class="bar-n">${n}/${v.total}</div></div>`;
     $('#catch-viz').innerHTML = `
-      <p class="viz-title">Fixes that apply cleanly</p>
-      ${bar('As Bob first wrote them', v.first_attempt_clean, 'bad')}
-      ${bar('After hunk headers were regenerated (fix content unchanged)', v.after_verification_clean, 'good')}
-      <p class="muted small">Round 1, measured with <code>git apply --check</code>.</p>`;
+      ${bar('Applied as Bob wrote them', v.first_attempt_clean, 'bad')}
+      ${bar('After we fixed the line numbers (same code)', v.after_verification_clean, 'good')}`;
   }
 
   const row = (r) => {
     const m = r.m;
     const coinsR = runs.tasks.filter((t) => t.round === Number(r.short.slice(-1))).reduce((a, t) => a + t.bobcoins, 0);
-    const cell = (x) => (done(r) ? x : '<span class="muted">pending</span>');
+    const cell = (x) => (done(r) ? x : '<span class="muted">not yet</span>');
     return `<tr>
       <td><strong>${r.short}</strong><div class="muted small">${r.label}</div></td>
       <td><code>${r.target}</code><div class="muted small">${r.blurb}</div></td>
       <td class="num">${m.seeded}</td>
       <td class="num">${m.decoys || '—'}</td>
       <td class="num">${cell(`<b>${m.caught}/${m.seeded}</b>`)}</td>
-      <td class="num">${cell(pct(m.precision))}</td>
+      <td class="num">${cell(String(m.false_positives))}</td>
       <td class="num">${m.decoys ? cell(`${m.decoy_hits}/${m.decoys}`) : '—'}</td>
-      <td class="num">${cell(`${m.fixes_apply_cleanly ?? 0}/${m.fixed}`)}</td>
+      <td class="num">${done(r) && m.fixed ? `${m.fixes_apply_cleanly ?? 0}/${m.fixed}` : '<span class="muted">in progress</span>'}</td>
       <td class="num">${coinsR ? coinsR.toFixed(2) : cell('—')}</td>
     </tr>`;
   };
-  $('#rounds-table').innerHTML = `<thead><tr><th>Round</th><th>Target</th><th class="num">Seeded</th><th class="num">Decoys</th><th class="num">Caught</th><th class="num">Precision</th><th class="num">Fooled by decoys</th><th class="num">Fixes apply</th><th class="num">Bobcoins</th></tr></thead><tbody>${ROUNDS.map(row).join('')}</tbody>`;
+  $('#rounds-table').innerHTML = `<thead><tr><th>Round</th><th>App</th><th class="num">Bugs</th><th class="num">Traps</th><th class="num">Found</th><th class="num">False alarms</th><th class="num">Fell for traps</th><th class="num">Patches apply</th><th class="num">Bobcoins</th></tr></thead><tbody>${ROUNDS.map(row).join('')}</tbody>`;
 }
 
 // ---------- findings ----------
@@ -140,10 +143,10 @@ function renderFindings() {
   const run = r.f.run ?? {};
   const pending = fs.length === 0;
   $('#pending-banner').hidden = !pending;
-  $('#pending-banner').innerHTML = `Bob hasn't audited <code>${r.target}</code> yet. In Bob IDE, 🛡️ Security Auditor mode: <em>Run the security-audit skill on ${r.target}</em>.`;
+  $('#pending-banner').innerHTML = `Bob hasn't looked at <code>${r.target}</code> yet.`;
   $('#run-summary').innerHTML = pending
     ? `${r.short} · ${r.label} · <code>${r.target}</code>`
-    : `${r.short} · ${r.label} · ${fs.length} findings on <code>${r.target}</code> · ${esc(run.subagents?.length ? `${run.subagents.length} parallel subagents` : 'parallel subagents')}${run.date ? ` · ${new Date(run.date).toLocaleString()}` : ''}`;
+    : `${fs.length} things Bob flagged in <code>${r.target}</code>, using ${run.subagents?.length || 'several'} subagents in parallel.${run.date ? ` Run on ${new Date(run.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}.` : ''}`;
   $('#sarif-link').href = r.sarif;
   $('#sarif-link').setAttribute('download', `devpulse-${r.key}.sarif`);
   $('#sarif-link').hidden = pending;
@@ -154,7 +157,7 @@ function renderFindings() {
     ['high', count('high'), 'High'],
     ['medium', count('medium'), 'Medium'],
     ['low', count('low'), 'Low'],
-    ['ok', `${applyOk}/${fs.length}`, 'Fixes verified'],
+    ['ok', `${applyOk}/${fs.length}`, 'Patches apply'],
   ].map(([c, n, l]) => `<div class="sev sev-${c}"><b>${n}</b><span>${l}</span></div>`).join('');
 
   $('#sev-filter').innerHTML = ['all', 'high', 'medium', 'low'].map((s) => `<button data-sev="${s}" class="${s === sevFilter ? 'on' : ''}">${s === 'all' ? 'All' : SEV[s]}</button>`).join('');
@@ -171,12 +174,12 @@ function renderFindings() {
         <span class="sev-dot ${f.severity}" aria-label="${SEV[f.severity]}"></span>
         <span class="f-main"><span class="f-title">${esc(f.title)}</span>
           <span class="f-meta"><code>${esc(f.file.replace(r.target, ''))}:${f.line}</code> · ${esc(f.asvs)}</span></span>
-        <span class="f-tags">${caughtBy.has(f.id) ? '<span class="tag ok" title="Matches a seeded defect">✓ real</span>' : done(r) ? '<span class="tag warn" title="Matches no seeded defect">false +</span>' : ''}
-          ${r.m.fix_apply_status?.[f.id] === 'clean' ? '<span class="tag fix">fix ✓</span>' : ''}</span>
+        <span class="f-tags">${caughtBy.has(f.id) ? '<span class="tag ok" title="This matches one of the bugs we planted">real bug</span>' : done(r) ? '<span class="tag warn" title="This doesn\'t match any bug we planted">false alarm</span>' : ''}
+          ${r.m.fix_apply_status?.[f.id] === 'clean' ? '<span class="tag fix">patch ok</span>' : ''}</span>
       </button></li>`).join('');
   $$('#findings-list .finding').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); select(b.dataset.id); if (window.innerWidth < 980) $('#detail').scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
   if (!pending) select(selected && fs.some((f) => f.id === selected) ? selected : list[0]?.id);
-  else $('#detail').innerHTML = '<div class="empty-detail"><p>Findings, evidence and verified fixes appear here once Bob has run.</p></div>';
+  else $('#detail').innerHTML = '<div class="empty-detail"><p>Nothing here yet.</p></div>';
 }
 
 function diffHtml(text) {
@@ -203,10 +206,10 @@ function select(id) {
     </div>
     <h3>${esc(f.title)}</h3>
     <p class="detail-exp">${esc(f.explanation)}</p>
-    <p class="label">Evidence <span class="muted">— <code>${esc(f.file)}:${f.line}</code>, verbatim</span></p>
+    <p class="label">The line Bob flagged <span class="muted"><code>${esc(f.file)}:${f.line}</code></span></p>
     <pre class="code evidence">${esc(f.evidence)}</pre>
-    <p class="label">Fix written by Bob ${applies === 'clean' ? '<span class="tag fix">✓ applies cleanly</span>' : applies ? '<span class="tag warn">does not apply</span>' : ''}</p>
-    ${d ? `<pre class="code diff">${diffHtml(d)}</pre>` : '<p class="muted">No fix generated yet.</p>'}`;
+    <p class="label">Bob's patch ${applies === 'clean' ? '<span class="tag fix">applies cleanly</span>' : applies ? '<span class="tag warn">doesn\'t apply</span>' : ''}</p>
+    ${d ? `<pre class="code diff">${diffHtml(d)}</pre>` : '<p class="muted">Bob hasn\'t written a patch for this one yet.</p>'}`;
 }
 
 // ---------- benchmark ----------
@@ -215,16 +218,16 @@ function renderBenchmark() {
   const r = current;
   const m = r.m;
   const cards = [
-    ['Recall', done(r) ? pct(m.recall) : '—', `${m.caught}/${m.seeded} seeded defects found`],
-    ['Precision', done(r) ? pct(m.precision) : '—', `${m.false_positives} false positive${m.false_positives === 1 ? '' : 's'}`],
-    ['Decoys', m.decoys ? (done(r) ? `${m.decoys - m.decoy_hits}/${m.decoys}` : '—') : 'n/a', m.decoys ? 'left alone correctly' : 'none in this round'],
-    ['Fixes apply', done(r) ? `${m.fixes_apply_cleanly ?? 0}/${m.fixed}` : '—', 'git apply --check'],
+    ['Bugs found', done(r) ? `${m.caught} of ${m.seeded}` : '-', ''],
+    ['False alarms', done(r) ? String(m.false_positives) : '-', ''],
+    ['Traps it fell for', m.decoys ? (done(r) ? `${m.decoy_hits} of ${m.decoys}` : '-') : 'none set', ''],
+    ['Patches that apply', done(r) && m.fixed ? `${m.fixes_apply_cleanly ?? 0} of ${m.fixed}` : 'in progress', ''],
   ];
   $('#metric-row').innerHTML = cards.map(([l, v, s]) => `<div class="card metric"><div class="metric-l">${l}</div><div class="metric-v">${v}</div><div class="muted small">${s}</div></div>`).join('');
   const caught = new Map((m.caught_ids ?? []).map((c) => [c.defect, c.finding]));
   $('#gt-list').innerHTML = r.gt.defects.map((d) => {
     const hit = caught.get(d.id);
-    const st = !done(r) ? '<span class="tag">pending</span>' : hit ? `<span class="tag ok">caught · ${hit}</span>` : '<span class="tag warn">missed</span>';
+    const st = !done(r) ? '<span class="tag">not yet</span>' : hit ? `<span class="tag ok">found (${hit})</span>` : '<span class="tag warn">missed</span>';
     const l = locs(d)[0];
     return `<li><span class="sev-dot ${d.severity}"></span><div><div class="gt-t">${esc(d.summary)}</div><div class="muted small"><code>${esc(l.file.replace(r.target, ''))}:${l.line}</code> · ${esc(d.category)} · ${esc(d.asvs)}</div></div>${st}</li>`;
   }).join('');
@@ -232,10 +235,10 @@ function renderBenchmark() {
   const decoys = r.gt.decoys ?? [];
   $('#decoy-list').innerHTML = decoys.map((d) => {
     const h = hits.get(d.id);
-    const st = !done(r) ? '<span class="tag">pending</span>' : h ? `<span class="tag warn">flagged · ${h}</span>` : '<span class="tag ok">left alone ✓</span>';
-    return `<li><span class="sev-dot decoy"></span><div><div class="gt-t">Looks like ${esc(d.looks_like)}</div><div class="muted small">${esc(d.why_safe)} — <code>${esc(d.file.replace(r.target, ''))}</code></div></div>${st}</li>`;
+    const st = !done(r) ? '<span class="tag">not yet</span>' : h ? `<span class="tag warn">fell for it (${h})</span>` : '<span class="tag ok">not fooled</span>';
+    return `<li><span class="sev-dot decoy"></span><div><div class="gt-t">Looks like ${esc(d.looks_like)}</div><div class="muted small">${esc(d.why_safe)}. <code>${esc(d.file.replace(r.target, ''))}</code></div></div>${st}</li>`;
   }).join('');
-  $('#decoy-empty').textContent = decoys.length ? '' : 'Round 1 has no decoys — that is why round 2 exists.';
+  $('#decoy-empty').textContent = decoys.length ? '' : 'No traps in round 1. That came later.';
 }
 
 // ---------- how ----------
@@ -248,9 +251,9 @@ function renderHow() {
 // ---------- evidence ----------
 function renderEvidence() {
   const url = (name) => shots[`../bob_sessions/${name}`];
-  $('#runs-table').innerHTML = `<thead><tr><th>Task</th><th>What Bob did</th><th>Mode · skill</th><th>Subagents</th><th class="num">Bobcoins</th><th>Outcome</th></tr></thead><tbody>${runs.tasks.map((t) => `
+  $('#runs-table').innerHTML = `<thead><tr><th>Task</th><th>What we asked</th><th>Mode</th><th>Subagents</th><th class="num">Bobcoins</th><th>What happened</th></tr></thead><tbody>${runs.tasks.map((t) => `
     <tr><td><b>${t.task}</b><div class="muted small">Round ${t.round}</div></td>
-      <td>${esc(t.title)}${url(t.screenshot) ? `<div><button class="link small" data-shot="${esc(t.screenshot)}">view summary ↗</button></div>` : ''}</td>
+      <td>${esc(t.title)}${url(t.screenshot) ? `<div><button class="link small" data-shot="${esc(t.screenshot)}">see screenshot</button></div>` : ''}</td>
       <td>${esc(t.mode)}${t.skill ? `<div class="muted small">${esc(t.skill)}</div>` : ''}</td>
       <td class="small">${esc(t.subagents ?? '—')}</td>
       <td class="num"><b>${t.bobcoins.toFixed(3)}</b><div class="muted small">${esc(t.context ?? '')}</div></td>
