@@ -1,0 +1,12 @@
+{
+  "run": {
+    "tool": "IBM Bob 2.0",
+    "mode": "agent",
+    "date": "",
+    "target": "sample_app/",
+    "subagents": [],
+    "task_session_screenshot": "",
+    "notes": "PENDING — Bob has not audited sample_app/ yet. Run the security-audit skill in Bob IDE to populate this file."
+  },
+  "findings": []
+}

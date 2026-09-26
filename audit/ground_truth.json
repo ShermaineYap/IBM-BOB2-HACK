@@ -1,0 +1,44 @@
+{
+  "_readme": "Seeded defects in sample_app/. Answer key for scoring the audit. Do not show this to Bob before the audit runs.",
+  "defects": [
+    { "id": "GT01", "category": "sqli", "asvs": "V5.3.4", "severity": "high",
+      "file": "sample_app/routes/auth.js", "line": 29,
+      "summary": "Login query built by string concatenation of email and password hash" },
+    { "id": "GT02", "category": "sqli", "asvs": "V5.3.4", "severity": "high",
+      "file": "sample_app/services/user.js", "line": 29,
+      "summary": "searchByName concatenates the search term into a LIKE clause" },
+    { "id": "GT03", "category": "weak-password-policy", "asvs": "V2.1.1", "severity": "medium",
+      "file": "sample_app/services/user.js", "line": 5,
+      "summary": "Password policy accepts anything longer than 6 characters" },
+    { "id": "GT04", "category": "weak-hashing", "asvs": "V2.4.1", "severity": "high",
+      "file": "sample_app/services/user.js", "line": 9,
+      "summary": "Passwords hashed with unsalted MD5" },
+    { "id": "GT05", "category": "hardcoded-secret", "asvs": "V6.4.1", "severity": "high",
+      "file": "sample_app/config.js", "line": 6,
+      "summary": "JWT signing secret hardcoded in source" },
+    { "id": "GT06", "category": "missing-rate-limit", "asvs": "V2.2.1", "severity": "medium",
+      "file": "sample_app/routes/auth.js", "line": 24,
+      "summary": "Login endpoint has no brute-force protection or rate limiting" },
+    { "id": "GT07", "category": "xss", "asvs": "V5.3.3", "severity": "high",
+      "file": "sample_app/routes/users.js", "line": 14,
+      "summary": "Search term reflected into HTML without encoding" },
+    { "id": "GT08", "category": "missing-authz", "asvs": "V4.1.3", "severity": "high",
+      "file": "sample_app/routes/users.js", "line": 34,
+      "summary": "Admin user listing has no authentication or admin check" },
+    { "id": "GT09", "category": "info-leak", "asvs": "V7.4.1", "severity": "medium",
+      "file": "sample_app/server.js", "line": 15,
+      "summary": "Error handler returns stack traces to the client" },
+    { "id": "GT10", "category": "session-ttl", "asvs": "V3.3.2", "severity": "low",
+      "file": "sample_app/config.js", "line": 7,
+      "summary": "Session tokens valid for 30 days with no refresh or revocation" }
+  ],
+  "clean_by_design": [
+    "sample_app/services/user.js createUser/findByEmail/findById use parameterised queries",
+    "sample_app/middleware/auth.js requireAuth verifies the token before trusting it",
+    "sample_app/server.js limits JSON body size"
+  ],
+  "matching": {
+    "rule": "A finding matches a defect when file is equal, category is equal, and |finding.line - defect.line| <= 3.",
+    "false_positive": "A finding that matches no defect."
+  }
+}

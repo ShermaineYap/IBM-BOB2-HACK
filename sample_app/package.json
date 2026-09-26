@@ -1,0 +1,15 @@
+{
+  "name": "shoply-api",
+  "version": "0.3.1",
+  "description": "Small e-commerce account API used as the audit target for DevPulse. Contains deliberately seeded security defects.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "sqlite3": "^5.1.7",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
