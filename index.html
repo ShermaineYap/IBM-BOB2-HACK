@@ -64,7 +64,7 @@
         <h2>How the test works</h2>
         <ol class="steps">
           <li><strong>We write the bugs.</strong> Two small Express apps, each with vulnerabilities planted in known places. The second one also has decoys: code that looks risky but is actually fine. The answer key lives in a file Bob is told not to open (and can't see anyway, thanks to <code>.bobignore</code>).</li>
-          <li><strong>Bob audits.</strong> We gave Bob its own Security Auditor mode. It can read the whole project but can only write to the <code>audit/</code> folder. It splits the work across subagents, one per file, running in parallel, and writes what it finds to a JSON file.</li>
+          <li><strong>Bob audits.</strong> We gave Bob its own Security Auditor mode. It can read the whole project but can only write to the <code>audit/</code> folder. It splits the files across subagents running in parallel, then writes what it finds to a JSON file.</li>
           <li><strong>Bob fixes.</strong> A second skill hands each finding to its own subagent, which writes a small patch.</li>
           <li><strong>A script marks the work.</strong> It compares Bob's findings to the answer key, counts misses and false alarms, and tries to apply every patch.</li>
         </ol>

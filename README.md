@@ -52,8 +52,8 @@ to `audit/**/metrics.json`. We didn't type any of them in by hand.
    and `.bobignore` hides them from it anyway.
 2. **Bob audits.** It runs in a custom Security Auditor mode
    (`.bob/custom_modes.yaml`) that can read the whole repo but can only save
-   files under `audit/`. The `security-audit` skill gives each file its own
-   read-only subagent, runs them in parallel, then merges the results and
+   files under `audit/`. The `security-audit` skill splits the files across
+   read-only subagents running in parallel, then merges the results and
    re-reads every line it's about to report.
 3. **Bob fixes.** The `generate-fixes` skill gives each finding its own
    subagent, which writes a small patch and checks it applies.
@@ -67,8 +67,8 @@ to `audit/**/metrics.json`. We didn't type any of them in by hand.
 ### The Bob features we leaned on
 
 - **A custom mode** that physically can't edit the apps it's auditing
-- **Subagents** running in parallel, one per file for audits and one per
-  finding for fixes
+- **Subagents** running in parallel: the audit files are split across
+  them, and each finding gets its own subagent for the fix
 - **Skills** so Bob follows the same checklist and output format every time
 - **Rules** and **AGENTS.md** for project context
 - **`.bobignore`** to keep the answer keys out of Bob's context
