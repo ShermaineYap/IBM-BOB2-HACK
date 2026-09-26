@@ -1,112 +1,89 @@
-# DevPulse — Smart Developer Onboarding & Code Quality Coach
-> **IBM Bob 2.0 Hackathon Project Submission**
+# DevPulse — security audit by IBM Bob 2.0, scored honestly
 
-![DevPulse Banner](https://img.shields.io/badge/Built%20With-IBM%20Bob%202.0-0F62FE?style=for-the-badge&logo=ibm)
-![License](https://img.shields.io/badge/License-MIT-green.style=for-the-badge)
+**Live demo:** _(Vercel URL goes here)_ · **Video:** _(link)_ · IBM Bob 2.0 Hackathon, 25–27 September 2026
 
----
+Most AI code-audit demos show a scan that finds everything. That proves
+nothing, because nobody knows what it missed. DevPulse seeds a real codebase
+with known defects first, lets Bob audit it as a multi-step agent, and then
+scores Bob against the answer key. The result is a number a security lead
+can act on: *recall* (how many seeded defects Bob found) and *precision*
+(how many of Bob's findings were real).
 
-## 1. Executive Summary & Problem Statement
+## What Bob does
 
-### The Problem
-Developer onboarding and code quality reviews are major bottlenecks in modern software engineering:
-- **Unfamiliar Codebases**: New team members spend days or weeks attempting to understand legacy architecture, setup instructions, and design patterns.
-- **Security & Quality Audit Gaps**: Code reviews rely heavily on manual inspection, allowing OWASP vulnerabilities to slip into production.
-- **Inconsistent Documentation**: Commit messages, PR descriptions, and compliance reports are incomplete or missing.
+1. **Audit** — the `security-audit` skill in `.bob/skills/` has Bob spawn one
+   read-only *explore* subagent per source file, in parallel, each checking a
+   fixed OWASP ASVS 4.0 list. Bob merges the candidates, re-verifies every
+   evidence line, and writes `audit/findings.json`.
+2. **Fix** — the `generate-fixes` skill has Bob spawn one *general* subagent
+   per finding, each returning a minimal unified diff. Diffs land in
+   `audit/fixes/`. The sample app itself stays vulnerable so the audit is
+   reproducible.
+3. **Score** — `node scripts/score_audit.mjs` matches findings to
+   `audit/ground_truth.json` and writes `audit/metrics.json`.
 
-### The Solution: DevPulse
-**DevPulse** is an AI-native developer onboarding, OWASP security auditing, and git workflow platform powered by **IBM Bob IDE 2.0**.
+The dashboard (`index.html`, Vite) renders those files. It contains no AI
+and no simulation — if Bob hasn't run, it says so.
 
-By combining **IBM Bob Agent Mode**, **literate coding inline diffs**, **subagents**, and **context management (`/init`)**, DevPulse delivers:
-- 🚀 **75% Reduction in Developer Onboarding Time**: Automated repository visualization and step-by-step setup guidance.
-- 🛡️ **Zero Security Flaws at Commit**: OWASP ASVS scanning with automated inline security refactoring.
-- ⚡ **100% Automated Conventional Commits & PR Descriptions**: Streamlined git pipelines.
+## The audit target
 
----
+`sample_app/` is Shoply, a small Express account API with **ten seeded
+defects**: two SQL injections, reflected XSS, MD5 password hashing, a weak
+password policy, a hardcoded JWT secret, no login rate limiting, an
+unauthenticated admin endpoint, stack traces returned to clients, and a
+30-day session TTL. Three things are deliberately correct so false positives
+can be measured.
 
-## 2. Architecture & IBM Bob 2.0 Integration
+## Results
 
-### System Architecture
-```mermaid
-graph TD
-    User["Developer / Reviewer"] -->|Interacts| Dashboard["DevPulse Web Dashboard"]
-    Dashboard -->|Invokes Commands| BobIDE["IBM Bob IDE 2.0 Core"]
-    BobIDE -->|Context /init| AGENTS["AGENTS.md Context File"]
-    BobIDE -->|Spawns Subagents| SecuritySub["Security Auditor Subagent"]
-    BobIDE -->|Spawns Subagents| UMLSub["Mermaid UML Generator"]
-    SecuritySub -->|Generates| SARIF["SARIF Compliance Report"]
-    UMLSub -->|Renders| VisualDiagrams["Interactive System Diagrams"]
-    BobIDE -->|Tracks Usage| Evidence["bob_sessions/ Deliverables"]
-```
+_(Filled in after the audit runs — recall, precision, caught/missed, with a
+link to the task session screenshot.)_
 
-### Core IBM Bob 2.0 Features Utilized
-1. **Agent Mode & Subagents**: IBM Bob runs multi-step tasks and spawns subagents (`Security-Auditor-Subagent`, `Mermaid-Generator`) in isolated contexts.
-2. **Persistent Context (`/init`)**: `AGENTS.md` provides architectural knowledge across conversations.
-3. **Literate Coding**: Refactors vulnerable code blocks directly in editor comments with inline diff previews.
-4. **Custom Rules (`.bobrules`)**: Enforces OWASP ASVS v4.0 compliance standards and conventional commit formats.
-5. **Task Session Summary Evidence (`bob_sessions/`)**: Captures and verifies Bobcoin consumption (12.8 / 40.0 Bobcoins used).
+## Run it
 
----
-
-## 3. Project Structure
-
-```
-ibm-bob-devpulse/
-├── AGENTS.md                  # IBM Bob project context & architecture guide
-├── .bobrules                  # IBM Bob team guidelines & security rules
-├── .bobignore                 # Context window exclusion rules
-├── bob_sessions/              # MANDATORY SUBMISSION DELIVERABLE (Task Summary Screenshots)
-│   ├── teamdevpulse_task01_onboarding_arch_summary.png
-│   ├── teamdevpulse_task02_security_audit_summary.png
-│   ├── teamdevpulse_task03_literate_coding_summary.png
-│   └── teamdevpulse_task04_pr_generation_summary.png
-├── index.html                 # Carbon Dark theme dashboard layout
-├── src/
-│   ├── main.js                # Frontend logic, Mermaid renderer, security auditor
-│   └── style.css              # Custom HSL dark tokens & Carbon design styling
-├── package.json
-└── README.md                  # Project submission documentation
-```
-
----
-
-## 4. Local Installation & Setup Guide
-
-### Prerequisites
-- **Node.js**: `v24.19.0` or higher
-- **NPM**: `v11.17.0` or higher
-- **IBM Bob IDE**: `v2.0.2` or higher (signed into hackathon instance `ibm-coding-challenge-uat`)
-
-### Quick Start
 ```bash
-# 1. Clone the repository
-git clone https://github.com/your-team/ibm-bob-devpulse.git
-cd ibm-bob-devpulse
-
-# 2. Install dependencies
 npm install
+npm run dev          # dashboard at http://localhost:5173
 
-# 3. Launch local development server
-npm run dev
+# In Bob IDE, Agent mode, in this repo:
+#   "Run the security-audit skill on sample_app/"
+#   then: "Run the generate-fixes skill"
+node scripts/score_audit.mjs
 ```
 
-Open `http://localhost:5173` in your browser to interact with the **DevPulse Dashboard**.
+## Repository layout
 
----
+```
+.bob/skills/security-audit/   how Bob audits: method, checklist, severity guide
+.bob/skills/generate-fixes/   how Bob writes one diff per finding
+.bob/rules/                   project rules Bob loads automatically
+sample_app/                   Shoply API — the audit target, seeded with defects
+audit/ground_truth.json       answer key (Bob is told not to read it)
+audit/findings.json           written by Bob
+audit/fixes/*.diff            written by Bob
+audit/metrics.json            written by the scorer
+scripts/score_audit.mjs       recall / precision scorer
+scripts/check_secrets.sh      credential scan, run before every commit
+bob_sessions/                 task session summary screenshots (mandatory)
+index.html, src/              the dashboard
+```
 
-## 5. Submission Checklist & Evidence Verification
+## Bob 2.0 features used
 
-- [x] **Working Prototype**: Live web dashboard showcasing onboarding, security auditing, and PR generation.
-- [x] **IBM Bob IDE Core Component**: Agent mode, literate coding, custom rules, and subagents fully integrated.
-- [x] **Mandatory Deliverable (`bob_sessions/`)**: All 4 task session consumption summary PNG screenshots included in root repo:
-  - Task 1: `teamdevpulse_task01_onboarding_arch_summary.png` (3.8 Bobcoins)
-  - Task 2: `teamdevpulse_task02_security_audit_summary.png` (4.5 Bobcoins)
-  - Task 3: `teamdevpulse_task03_literate_coding_summary.png` (2.9 Bobcoins)
-  - Task 4: `teamdevpulse_task04_pr_generation_summary.png` (1.6 Bobcoins)
-- [x] **Bobcoin Budget**: Total 12.8 / 40.0 Bobcoins used (32% usage, 68% remaining).
-- [x] **Data Compliance**: Built using compliant, synthetic sample data. No confidential or PII data used.
+Agent mode · parallel subagents (`explore` for read-only file scans,
+`general` for fix generation, `fork_context: false` for isolation) · project
+skills · project rules · `.bobignore` to keep the answer key and screenshots
+out of context.
 
----
+## Roadmap
 
-## 6. License
-Distributed under the MIT License. See `LICENSE` for details.
+Run as a CI check on pull requests; extend the checklist beyond the ASVS
+subset; let teams seed their own answer keys to benchmark Bob on their stack.
+
+## Team
+
+Shermaine Yap · Caiting
+
+## Licence
+
+MIT.

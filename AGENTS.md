@@ -1,34 +1,28 @@
-# AGENTS.md — IBM Bob 2.0 Project Context & Architectural Guide
+# AGENTS.md — project context for IBM Bob
 
-## Project Overview
-**DevPulse** is a smart developer onboarding, automated code review, and DevSecOps quality workspace built with **IBM Bob 2.0**.
-It addresses the critical developer friction points:
-1. Long onboarding times for unfamiliar codebases.
-2. Manual code reviews and security audit overhead.
-3. Inconsistent git commit messages and PR descriptions.
+DevPulse audits `sample_app/` for security defects and scores the audit
+against a seeded answer key. You are the auditor. Read `.bob/rules/devpulse.md`.
 
-## Technology Stack & Architecture
-- **Frontend**: Vite Vanilla JS / HTML5 / CSS3 (Carbon Design System Dark Theme)
-- **Diagram Engine**: Mermaid.js (Class, Sequence, and Flowchart diagrams)
-- **AI Core**: IBM Bob IDE 2.0 (Agent Mode, Literate Coding, Custom Security Skills, Subagents)
-- **Optional Integrations**: IBM watsonx Orchestrate & IBM watsonx.ai (Granite foundation models)
+## Layout
 
-## System Architecture Diagram
-```mermaid
-graph TD
-    User["Developer / Reviewer"] -->|Interacts| Dashboard["DevPulse Web Dashboard"]
-    Dashboard -->|Invokes| BobIDE["IBM Bob IDE 2.0 Agent"]
-    BobIDE -->|Subagents| Sub1["Security Auditor Subagent"]
-    BobIDE -->|Subagents| Sub2["Code Modernization Subagent"]
-    BobIDE -->|Subagents| Sub3["Documentation & UML Subagent"]
-    Sub1 -->|Generates| Reports["SARIF & OSCAL Security Reports"]
-    Sub2 -->|Applies| Diffs["Inline Refactoring & Diffs"]
-    Sub3 -->|Creates| Diagram["Mermaid Architecture Diagrams"]
-    BobIDE -->|Exports| Sessions["bob_sessions/ Task Summary Deliverables"]
-```
+- `sample_app/` — Shoply, an Express account API. **Audit target. Keep it
+  unchanged.** Fixes go to `audit/fixes/` as diffs, never applied here.
+- `audit/findings.json` — you write this (schema: `audit/findings.schema.json`).
+- `audit/fixes/` — you write one unified diff per finding here.
+- `audit/ground_truth.json` — answer key. **Do not read it** unless the user
+  asks you to score.
+- `.bob/skills/security-audit/` and `.bob/skills/generate-fixes/` — the two
+  workflows you run. Follow them exactly; the dashboard depends on the output
+  format.
+- `index.html`, `src/` — the dashboard. Vanilla JS + Vite. Reads the files
+  above at build time.
+- `bob_sessions/` — screenshots of your task session summaries. The user
+  captures these; remind them after each task.
 
-## Team Rules & Persona Configurations
-- **Mode**: Agent Mode (`agent`)
-- **Coding Style**: Strict ES6+ Modular Vanilla JS, Carbon Design HSL color palette, no external framework bloat.
-- **Security Baseline**: Scans against OWASP ASVS v4.0 standards.
-- **Git Commit Standard**: Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`).
+## How to work here
+
+- Use subagents for per-file and per-finding work, in parallel. Keep the
+  main conversation for merging.
+- Output goes to files, not chat. Chat gets a one-paragraph summary.
+- Prefer smaller models for read-only exploration.
+- Never commit secrets. `scripts/check_secrets.sh` must pass.

@@ -12,7 +12,7 @@ BLOCKS='(BEGIN [A-Z ]*PRIVATE KEY|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{10,}|
 echo "Scanning for credentials..."
 hits=$(grep -rIniE "$ASSIGNED|$BLOCKS" . \
   --exclude-dir=.git --exclude-dir=__pycache__ --exclude-dir=.venv \
-  --exclude-dir=.pytest_cache \
+  --exclude-dir=.pytest_cache --exclude-dir=dist --exclude-dir=node_modules \
   --exclude=check_secrets.sh --exclude=.env.example --exclude-dir=sample_app || true)
 
 if [ -n "$hits" ]; then
