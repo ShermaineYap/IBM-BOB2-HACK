@@ -5,9 +5,11 @@ description: For each open finding in audit/findings.json, produce a minimal, co
 
 # Generate fixes
 
-Input: `audit/findings.json` with findings whose `status` is `open`.
-Output: one unified diff per finding at `audit/fixes/<id>.diff`, and the
-finding updated with `fix_diff` and `status: "fixed"`.
+Input: a findings file (default `audit/findings.json`) with findings whose
+`status` is `open`.
+Output: one unified diff per finding in the `fixes/` folder next to that
+findings file (e.g. `audit/hard/fixes/<id>.diff`), and the finding updated
+with `fix_diff` and `status: "fixed"`.
 
 ## Method
 
@@ -18,11 +20,16 @@ finding updated with `fix_diff` and `status: "fixed"`.
 3. Each subagent returns a unified diff (`--- a/<path>` / `+++ b/<path>`,
    standard hunks) that fixes **only that finding**. It must not touch other
    lines, reformat, or rename things.
-4. Write each diff to `audit/fixes/<id>.diff`. Do **not** apply it to
-   `sample_app/` — the sample app stays vulnerable so the audit remains
-   reproducible. The dashboard shows before/after from the diff.
-5. Update the finding: `fix_diff: "audit/fixes/<id>.diff"`, `status: "fixed"`.
-6. Report in one paragraph: how many fixes written, any finding you could not
+4. Write each diff to the fixes folder. Do **not** apply it to the target —
+   targets stay vulnerable so the audit remains reproducible.
+5. **Verify every diff before reporting it**: run `git apply --check <diff>`
+   from the repository root. If it fails, the hunk headers or context are
+   wrong — regenerate the diff by copying the target file to a scratch
+   location, editing the copy, and producing the patch with
+   `git diff --no-index`, then rewrite the paths to `a/<target>/…` and
+   `b/<target>/…`. A diff that does not apply is not a fix.
+6. Update the finding: `fix_diff: "audit/fixes/<id>.diff"`, `status: "fixed"`.
+7. Report in one paragraph: how many fixes written, any finding you could not
    fix and why.
 
 ## Fix rules

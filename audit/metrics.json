@@ -1,11 +1,14 @@
 {
-  "scored_at": "2026-09-26T09:08:38.286Z",
+  "scored_at": "2026-09-26T09:32:58.150Z",
+  "target": "sample_app/",
   "pending": false,
   "seeded": 10,
+  "decoys": 0,
   "reported": 10,
   "caught": 10,
   "missed": 0,
   "false_positives": 0,
+  "decoy_hits": 0,
   "fixed": 10,
   "fixes_apply_cleanly": 10,
   "fix_apply_status": {
@@ -79,5 +82,6 @@
     }
   ],
   "missed_ids": [],
-  "false_positive_ids": []
+  "false_positive_ids": [],
+  "decoy_hit_ids": []
 }

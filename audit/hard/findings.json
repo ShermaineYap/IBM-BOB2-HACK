@@ -1,0 +1,12 @@
+{
+  "run": {
+    "tool": "IBM Bob 2.0",
+    "mode": "custom",
+    "date": "",
+    "target": "ledger_app/",
+    "subagents": [],
+    "task_session_screenshot": "",
+    "notes": "PENDING — run the security-audit skill on ledger_app/ in the Security Auditor mode."
+  },
+  "findings": []
+}

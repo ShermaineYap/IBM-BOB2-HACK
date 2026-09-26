@@ -5,11 +5,11 @@ against a seeded answer key. You are the auditor. Read `.bob/rules/devpulse.md`.
 
 ## Layout
 
-- `sample_app/` — Shoply, an Express account API. **Audit target. Keep it
+- `sample_app/` (round 1) and `ledger_app/` (round 2, hard mode) — audit targets. **Keep them
   unchanged.** Fixes go to `audit/fixes/` as diffs, never applied here.
 - `audit/findings.json` — you write this (schema: `audit/findings.schema.json`).
 - `audit/fixes/` — you write one unified diff per finding here.
-- `audit/ground_truth.json` — answer key. **Do not read it** unless the user
+- any `ground_truth.json` — answer key. **Do not read it** unless the user
   asks you to score.
 - `.bob/skills/security-audit/` and `.bob/skills/generate-fixes/` — the two
   workflows you run. Follow them exactly; the dashboard depends on the output

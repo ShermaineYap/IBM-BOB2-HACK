@@ -6,3 +6,6 @@ dist/
 coverage/
 bob_sessions/*.png
 audit/ground_truth.json
+audit/**/ground_truth.json
+audit/**/metrics.json
+audit/metrics.json

@@ -1,11 +1,11 @@
 # DevPulse project rules
 
-- This repository has two parts: `sample_app/` (the audit target, kept
-  deliberately vulnerable) and everything else (the DevPulse dashboard and
-  tooling). Never "fix" `sample_app/` in place — fixes go to `audit/fixes/`
-  as diffs.
-- Never read `audit/ground_truth.json` unless the user explicitly asks you to
-  score results. It is the answer key.
+- Audit targets are `sample_app/` (round 1) and `ledger_app/` (round 2, hard
+  mode with decoys). Both are kept deliberately vulnerable. Never fix a target
+  in place — fixes go to the round's `fixes/` folder as diffs.
+- Never read any `ground_truth.json` file. They are answer keys.
+- Use the 🛡️ Security Auditor mode (`.bob/custom_modes.yaml`) for audits: it
+  can only write under `audit/`.
 - Findings and fixes are written to files under `audit/`, in the formats the
   skills define. Do not put findings in chat only.
 - Use subagents for per-file work and run them in parallel. Keep the main

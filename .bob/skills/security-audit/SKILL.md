@@ -6,8 +6,10 @@ description: Audit a Node/Express codebase against a focused OWASP ASVS 4.0 chec
 # Security audit
 
 You are auditing `sample_app/` (or the directory the user names) for security
-defects. Your output is a **file**, not a chat message: `audit/findings.json`,
-conforming to `audit/findings.schema.json`.
+defects. Your output is a **file**, not a chat message: `audit/findings.json`
+by default, or the findings path the user names (for example
+`audit/hard/findings.json` for `ledger_app/`). It must conform to
+`audit/findings.schema.json`.
 
 ## Method
 
@@ -25,7 +27,7 @@ conforming to `audit/findings.schema.json`.
    verbatim and the `line` number is exact (1-based, the first line of the
    offending statement).
 4. Assign severity using `severity-guide.md`.
-5. Write `audit/findings.json`. Set `run.date` to now in ISO 8601,
+5. Write the findings file. Set `run.date` to now in ISO 8601,
    `run.mode` to the mode you are in, `run.subagents` to the subagent names
    you spawned, and `run.task_session_screenshot` to the filename the user
    will save under `bob_sessions/` for this task.
@@ -46,7 +48,7 @@ conforming to `audit/findings.schema.json`.
 - Do **not** report the same category twice for the same line.
 - If you are unsure whether something is a defect, leave it out. Precision is
   scored.
-- Do **not** read `audit/ground_truth.json`. It is the answer key used to score
+- Do **not** read any `ground_truth.json` file. It is the answer key used to score
   you afterwards, and reading it invalidates the score.
 
 ## Output contract
