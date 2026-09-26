@@ -1,0 +1,50 @@
+{
+  "_readme": "Every Bob IDE task behind this project. Bobcoins and context come from the task session consumption summaries in bob_sessions/. Wall-clock durations were observed by the operator, not reported by Bob.",
+  "tasks": [
+    {
+      "task": "01",
+      "round": 1,
+      "title": "Security audit of sample_app/",
+      "mode": "Agent",
+      "skill": "security-audit",
+      "subagents": "7 explore, in parallel",
+      "bobcoins": 0.668,
+      "context": "32.9k / 270k",
+      "outcome": "10 findings written to audit/findings.json",
+      "screenshot": "devpulse_task01_security_audit_summary.png"
+    },
+    {
+      "task": "02",
+      "round": 1,
+      "title": "Generate fixes for 10 findings",
+      "mode": "Agent",
+      "skill": "generate-fixes",
+      "subagents": "10 general, in parallel",
+      "bobcoins": 1.09,
+      "context": "38.0k / 270k",
+      "wall_clock_minutes": 4,
+      "outcome": "10 diffs in audit/fixes/ \u2014 only 2 passed git apply --check",
+      "screenshot": "devpulse_task02_generate_fixes_summary.png"
+    },
+    {
+      "task": "03",
+      "round": 1,
+      "title": "Repair diff hunk headers (stopped)",
+      "mode": "Agent",
+      "skill": null,
+      "subagents": "8 general, in parallel",
+      "bobcoins": 1.73,
+      "context": "36.6k / 270k",
+      "outcome": "Stopped by operator: subagents failed to reconstruct hunks. Headers regenerated mechanically with git diff --no-index over Bob's own edits; fix content unchanged. Lesson fed back into the generate-fixes skill as a mandatory verify step.",
+      "screenshot": "devpulse_task03_diff_repair_attempt_summary.png"
+    }
+  ],
+  "verification": [
+    {
+      "round": 1,
+      "first_attempt_clean": 2,
+      "after_verification_clean": 10,
+      "total": 10
+    }
+  ]
+}

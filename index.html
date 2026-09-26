@@ -1,178 +1,251 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DevPulse — Security audit by IBM Bob 2.0, scored honestly</title>
-  <meta name="description" content="DevPulse runs an OWASP ASVS security audit with IBM Bob 2.0 agent mode and parallel subagents, writes structured findings and fixes, and scores itself against seeded defects." />
+  <title>DevPulse — Don't trust an AI security audit. Measure it.</title>
+  <meta name="description" content="DevPulse turns IBM Bob 2.0 into a security auditor whose findings are scored against a hidden answer key and whose fixes are proven to apply before anyone merges them." />
+  <meta property="og:title" content="DevPulse — measured AI security audits with IBM Bob 2.0" />
+  <meta property="og:description" content="Seeded defects, hidden answer key, decoys, recall/precision and fixes verified with git apply --check." />
   <link rel="icon" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./src/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div id="app">
-    <header class="top-header">
-      <div class="header-brand">
-        <div class="ibm-logo-icon">
-          <svg width="24" height="24" viewBox="0 0 32 32" fill="currentColor"><path d="M12 4h16v4H12zM12 10h16v4H12zM12 16h16v4H12zM12 22h16v4H12zM4 4h5v24H4z"/></svg>
-        </div>
-        <div class="brand-text">
-          <span class="brand-title">DevPulse <span class="badge-v2">IBM Bob 2.0</span></span>
-          <span class="brand-sub">Security audit by Bob, scored against seeded defects</span>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#overview" data-go="overview" aria-label="DevPulse home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 12h4l2-6 4 12 2-6h6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="brand-name">DevPulse</span>
+        <span class="chip chip-bob">IBM Bob 2.0</span>
+      </a>
+      <nav class="tabs" role="tablist" aria-label="Sections">
+        <button role="tab" data-tab="overview" class="active">Overview</button>
+        <button role="tab" data-tab="findings">Findings &amp; fixes</button>
+        <button role="tab" data-tab="benchmark">Benchmark</button>
+        <button role="tab" data-tab="how">How Bob does it</button>
+        <button role="tab" data-tab="evidence">Bob evidence</button>
+      </nav>
+      <a class="btn btn-ghost btn-sm gh" href="https://github.com/ShermaineYap/IBM-BOB2-HACK" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ================= OVERVIEW ================= -->
+    <section id="tab-overview" class="pane active" role="tabpanel">
+      <div class="hero">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="wrap hero-inner">
+          <p class="eyebrow">Code review · Security · IBM Bob 2.0 Agent mode</p>
+          <h1>Don't trust an AI security audit.<br><span class="grad">Measure it.</span></h1>
+          <p class="lede">DevPulse turns IBM Bob into a security auditor whose work is <strong>scored against a hidden answer key</strong> and whose fixes are <strong>proven to apply</strong> before anyone merges them. Every number on this page is computed from files Bob wrote.</p>
+          <div class="cta-row">
+            <button class="btn btn-primary" data-go="findings">See Bob's findings →</button>
+            <button class="btn btn-ghost" data-go="how">How it works</button>
+          </div>
+          <div class="kpis" id="hero-kpis"></div>
+          <p class="kpi-note" id="hero-note"></p>
         </div>
       </div>
-      <div class="header-actions">
-        <div class="bobcoin-pill" id="score-pill" title="Recall = seeded defects Bob found. Precision = findings that were real.">
-          <span class="pulse-dot"></span>
-          <span class="coin-label">Audit score:</span>
-          <strong class="coin-val" id="pill-score">pending</strong>
+
+      <div class="wrap section">
+        <div class="catch card card-glow">
+          <div class="catch-text">
+            <p class="eyebrow eyebrow-warn">The moment that matters</p>
+            <h2>Bob's fixes looked right. <span id="catch-broken">8 of 10</span> wouldn't apply.</h2>
+            <p>Every fix Bob wrote was the correct remedy — parameterised queries, bcrypt, rate limits, admin checks. But most of the diffs had wrong hunk line counts and would have failed at merge. DevPulse's verification step runs <code>git apply --check</code> on every fix and caught it. The lesson went straight back into the Bob skill: fixes must now pass that check before Bob reports them — round 2 tests whether that holds.</p>
+            <p class="muted small">Without verification this is invisible until a developer tries to apply the patch — the exact rework the AI was supposed to save.</p>
+          </div>
+          <div class="catch-viz" id="catch-viz" aria-label="Fixes that apply: before and after verification"></div>
         </div>
-        <a href="https://github.com/ShermaineYap/IBM-BOB2-HACK" class="btn-sessions" target="_blank" rel="noopener">Repository</a>
       </div>
-    </header>
 
-    <nav class="main-nav">
-      <button class="nav-tab active" data-tab="audit">1. Findings &amp; fixes</button>
-      <button class="nav-tab" data-tab="score">2. Score</button>
-      <button class="nav-tab" data-tab="how">3. How Bob does it</button>
-      <button class="nav-tab" data-tab="sessions">4. Bob session evidence</button>
-    </nav>
+      <div class="wrap section">
+        <div class="three">
+          <article class="card step">
+            <span class="step-n">1</span>
+            <h3>Seed</h3>
+            <p>Plant known vulnerabilities in a real codebase, plus <em>decoys</em> — code that looks dangerous but is safe. Write the answer key and hide it from Bob.</p>
+          </article>
+          <article class="card step">
+            <span class="step-n">2</span>
+            <h3>Audit &amp; fix with Bob</h3>
+            <p>A custom <strong>Security Auditor mode</strong> runs two project <strong>skills</strong>: one parallel <strong>subagent per file</strong> to audit, one per finding to write a fix. Output is JSON and diffs, not chat.</p>
+          </article>
+          <article class="card step">
+            <span class="step-n">3</span>
+            <h3>Score &amp; verify</h3>
+            <p>Recall, precision and decoy hits against the answer key. Every fix checked with <code>git apply --check</code>. Export to SARIF for GitHub code scanning.</p>
+          </article>
+        </div>
+      </div>
 
-    <main class="content-container">
+      <div class="wrap section">
+        <div class="section-head">
+          <h2>Two rounds, one harder than the last</h2>
+          <p class="muted">A perfect score on an easy target proves little, so round 2 raises the bar with subtle defects and decoys.</p>
+        </div>
+        <div class="table-wrap card"><table class="rounds" id="rounds-table"></table></div>
+      </div>
 
-      <!-- TAB 1: FINDINGS -->
-      <section id="tab-audit" class="tab-pane active">
-        <div class="panel-header">
-          <div class="panel-title-wrap">
-            <h2>Findings from Bob's audit of <code>sample_app/</code></h2>
-            <p id="run-summary">Loading…</p>
+      <div class="wrap section">
+        <div class="biz">
+          <div>
+            <h2>Why a team would pay for this</h2>
+            <p class="muted">Engineering leads have already bought AI code generation. What they can't do is certify its output. DevPulse gives them a number.</p>
           </div>
-          <div class="panel-tags">
-            <span class="tag tag-bob">Agent mode</span>
-            <span class="tag tag-bob">Parallel subagents</span>
-            <span class="tag tag-security">OWASP ASVS 4.0</span>
+          <ul class="ticks">
+            <li><strong>Before adopting an AI reviewer</strong> — benchmark it on your own stack with your own seeded defects. Know its recall and false-alarm rate before it gates a release.</li>
+            <li><strong>On every pull request</strong> — findings ship as SARIF, so they land in GitHub code scanning next to the code. Fixes arrive pre-verified.</li>
+            <li><strong>For audits and compliance</strong> — each finding cites an OWASP ASVS requirement and a verbatim evidence line, and every Bob run leaves a session record.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="wrap section tour">
+        <h2>60-second tour for judges</h2>
+        <ol class="tour-list">
+          <li><button class="link" data-go="findings">Findings &amp; fixes</button> — pick any finding, see Bob's evidence line and its verified diff.</li>
+          <li><button class="link" data-go="benchmark">Benchmark</button> — what Bob caught, missed, and whether it fell for the decoys.</li>
+          <li><button class="link" data-go="how">How Bob does it</button> — the custom mode and skills, verbatim.</li>
+          <li><button class="link" data-go="evidence">Bob evidence</button> — every task session summary and its Bobcoin cost.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================= FINDINGS ================= -->
+    <section id="tab-findings" class="pane" role="tabpanel">
+      <div class="wrap section">
+        <div class="section-head row">
+          <div>
+            <h2>Findings &amp; fixes</h2>
+            <p class="muted" id="run-summary"></p>
+          </div>
+          <div class="controls">
+            <div class="seg" role="group" aria-label="Round" id="round-seg"></div>
+            <a class="btn btn-ghost btn-sm" id="sarif-link" download>⬇ SARIF</a>
           </div>
         </div>
-
-        <div id="pending-banner" class="pending-banner" hidden>
-          Bob has not run yet. Open this repo in Bob IDE, switch to Agent mode and ask:
-          <code>Run the security-audit skill on sample_app/</code>. It writes <code>audit/findings.json</code>; this page reads it.
+        <div id="pending-banner" class="banner" hidden></div>
+        <div class="sev-row" id="sev-row"></div>
+        <div class="split">
+          <div class="card list-card">
+            <div class="filter" role="group" aria-label="Filter by severity" id="sev-filter"></div>
+            <ul class="findings" id="findings-list"></ul>
+          </div>
+          <div class="card detail-card" id="detail" aria-live="polite"></div>
         </div>
+      </div>
+    </section>
 
-        <div class="vuln-summary" id="severity-cards">
-          <div class="stat-card high"><span class="stat-val" id="count-high">0</span><span class="stat-lbl">High</span></div>
-          <div class="stat-card medium"><span class="stat-val" id="count-med">0</span><span class="stat-lbl">Medium</span></div>
-          <div class="stat-card low"><span class="stat-val" id="count-low">0</span><span class="stat-lbl">Low</span></div>
-          <div class="stat-card fixed"><span class="stat-val" id="count-fixed">0</span><span class="stat-lbl">Fixed by Bob</span></div>
+    <!-- ================= BENCHMARK ================= -->
+    <section id="tab-benchmark" class="pane" role="tabpanel">
+      <div class="wrap section">
+        <div class="section-head row">
+          <div>
+            <h2>Benchmark</h2>
+            <p class="muted">Computed by <code>scripts/score_audit.mjs</code>. Match rule: same category, same file, line within ±3. Anything unmatched is a false positive.</p>
+          </div>
+          <div class="seg" role="group" aria-label="Round" id="round-seg-2"></div>
         </div>
-
-        <div class="grid-2col">
+        <div class="metric-row" id="metric-row"></div>
+        <div class="split even">
           <div class="card">
-            <div class="card-header"><h3>Findings</h3><span class="badge-status" id="findings-count"></span></div>
-            <div class="card-body"><div class="vuln-list" id="findings-list"></div></div>
+            <h3 class="card-title">Seeded defects</h3>
+            <ul class="gt" id="gt-list"></ul>
           </div>
           <div class="card">
-            <div class="card-header"><h3>Evidence and fix</h3><span class="badge-status highlight" id="diff-title">Select a finding</span></div>
-            <div class="card-body">
-              <div class="diff-box">
-                <div class="diff-header"><span id="diff-file">—</span><span class="diff-tag">from audit/fixes/</span></div>
-                <pre class="diff-code" id="diff-code-display">Select a finding on the left.</pre>
-              </div>
-              <p class="vuln-desc" id="finding-explanation"></p>
-            </div>
+            <h3 class="card-title">Decoys <span class="muted small">— safe code that looks unsafe</span></h3>
+            <ul class="gt" id="decoy-list"></ul>
+            <p class="muted small" id="decoy-empty"></p>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- TAB 2: SCORE -->
-      <section id="tab-score" class="tab-pane">
-        <div class="panel-header">
-          <div class="panel-title-wrap">
-            <h2>How good was the audit?</h2>
-            <p>We seeded <code>sample_app/</code> with known defects before Bob saw it. <code>scripts/score_audit.mjs</code> compares Bob's findings against that answer key. These numbers are computed, not claimed.</p>
-          </div>
+    <!-- ================= HOW ================= -->
+    <section id="tab-how" class="pane" role="tabpanel">
+      <div class="wrap section">
+        <div class="section-head">
+          <h2>How Bob does it</h2>
+          <p class="muted">Everything Bob needs lives in <code>.bob/</code>: a custom mode that can read everything but only write under <code>audit/</code>, two skills, and project rules. Bob runs them in parallel subagents and writes files that this page renders.</p>
         </div>
-        <div class="vuln-summary" id="metric-cards">
-          <div class="stat-card"><span class="stat-val" id="m-recall">—</span><span class="stat-lbl">Recall (found / seeded)</span></div>
-          <div class="stat-card"><span class="stat-val" id="m-precision">—</span><span class="stat-lbl">Precision (real / reported)</span></div>
-          <div class="stat-card"><span class="stat-val" id="m-caught">—</span><span class="stat-lbl">Caught</span></div>
-          <div class="stat-card"><span class="stat-val" id="m-missed">—</span><span class="stat-lbl">Missed</span></div>
-          <div class="stat-card"><span class="stat-val" id="m-fp">—</span><span class="stat-lbl">False positives</span></div>
-        </div>
-        <div class="grid-2col">
-          <div class="card">
-            <div class="card-header"><h3>Seeded defects</h3><span class="badge-status">answer key</span></div>
-            <div class="card-body"><div class="vuln-list" id="ground-truth-list"></div></div>
-          </div>
-          <div class="card">
-            <div class="card-header"><h3>Why score at all</h3></div>
-            <div class="card-body">
-              <p class="vuln-desc">Most AI audit demos show a scan that finds everything. That proves nothing, because you can't tell what it missed. Seeding the target first turns "Bob found 8 issues" into "Bob found 8 of 10, with 1 false alarm" — a number a security lead can act on.</p>
-              <p class="vuln-desc">Matching rule: same file, same category, line within ±3. Each seeded defect can be matched once. Anything unmatched is a false positive.</p>
-              <p class="vuln-desc">Re-run: <code>node scripts/score_audit.mjs</code></p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 3: HOW -->
-      <section id="tab-how" class="tab-pane">
-        <div class="panel-header">
-          <div class="panel-title-wrap">
-            <h2>How Bob does it</h2>
-            <p>Two project skills in <code>.bob/skills/</code> tell Bob exactly what to do. Bob runs them in Agent mode, fans out one subagent per file, and writes files — not chat — that this page renders.</p>
-          </div>
-        </div>
-        <div class="card card-graph">
-          <div class="card-header"><h3>Pipeline</h3><span class="badge-status">actual flow</span></div>
-          <div class="card-body">
-            <div class="mermaid-wrap"><pre class="mermaid">
+        <div class="card">
+          <h3 class="card-title">Pipeline</h3>
+          <div class="mermaid-wrap"><pre class="mermaid" id="pipeline">
 flowchart LR
-  classDef bob fill:#2e1f47,stroke:#8a3ffc,color:#fff;
-  classDef file fill:#2e2511,stroke:#fddc69,color:#fff;
-  classDef ui fill:#1f2d47,stroke:#0F62FE,color:#fff;
-  U[Developer<br/>in Bob IDE]:::ui -->|"run security-audit skill"| A[Bob agent]:::bob
-  A --> S1[explore subagent<br/>routes/auth.js]:::bob
-  A --> S2[explore subagent<br/>routes/users.js]:::bob
-  A --> S3[explore subagent<br/>services, config…]:::bob
-  S1 & S2 & S3 --> M[merge + verify<br/>evidence lines]:::bob
-  M --> F[(audit/findings.json)]:::file
-  F -->|"run generate-fixes skill"| G[general subagents<br/>one per finding]:::bob
-  G --> D[(audit/fixes/*.diff)]:::file
-  F & D --> SC[score_audit.mjs<br/>vs ground_truth]:::file
-  SC --> W[this dashboard]:::ui
-            </pre></div>
-          </div>
+  classDef bob fill:#241a3d,stroke:#a56eff,color:#fff;
+  classDef file fill:#2a2310,stroke:#f1c21b,color:#fff;
+  classDef ui fill:#0f2240,stroke:#4589ff,color:#fff;
+  classDef gate fill:#0e2a1c,stroke:#42be65,color:#fff;
+  U[Developer<br/>in Bob IDE]:::ui -->|"🛡️ Security Auditor mode"| A[security-audit<br/>skill]:::bob
+  A --> S1[explore subagent<br/>file 1]:::bob
+  A --> S2[explore subagent<br/>file 2]:::bob
+  A --> S3[explore subagent<br/>file N]:::bob
+  S1 & S2 & S3 --> M[merge + re-verify<br/>evidence lines]:::bob
+  M --> F[(findings.json)]:::file
+  F --> G[generate-fixes<br/>one subagent per finding]:::bob
+  G --> D[(fixes/*.diff)]:::file
+  D --> V{git apply<br/>--check}:::gate
+  F & V --> SC[score vs hidden<br/>answer key]:::gate
+  SC --> W[dashboard + SARIF]:::ui
+          </pre></div>
         </div>
-        <div class="grid-2col card-margin">
-          <div class="card">
-            <div class="card-header"><h3>security-audit skill</h3><span class="badge-status">.bob/skills/security-audit/SKILL.md</span></div>
-            <div class="card-body"><div class="terminal-block"><pre class="term-code" id="skill-audit-text"></pre></div></div>
-          </div>
-          <div class="card">
-            <div class="card-header"><h3>generate-fixes skill</h3><span class="badge-status">.bob/skills/generate-fixes/SKILL.md</span></div>
-            <div class="card-body"><div class="terminal-block"><pre class="term-code" id="skill-fixes-text"></pre></div></div>
-          </div>
+        <div class="feature-grid">
+          <div class="card feat"><h4>Custom mode</h4><p>Read everything, write only <code>^audit/.*\.(json|diff)$</code>. The auditor physically cannot edit the code it audits.</p></div>
+          <div class="card feat"><h4>Parallel subagents</h4><p>One read-only <em>explore</em> subagent per file keeps the main context small and cheap; one <em>general</em> subagent per fix.</p></div>
+          <div class="card feat"><h4>Skills</h4><p>Reusable instructions with a checklist of 23 OWASP ASVS classes, a severity guide and a JSON output contract.</p></div>
+          <div class="card feat"><h4>Rules &amp; .bobignore</h4><p>Bob is told never to read the answer keys, and they're excluded from its context anyway.</p></div>
         </div>
-      </section>
+        <div class="code-grid">
+          <details class="card code-card" open><summary>.bob/custom_modes.yaml</summary><pre id="src-mode"></pre></details>
+          <details class="card code-card"><summary>.bob/skills/security-audit/SKILL.md</summary><pre id="src-audit"></pre></details>
+          <details class="card code-card"><summary>.bob/skills/generate-fixes/SKILL.md</summary><pre id="src-fixes"></pre></details>
+        </div>
+        <div class="card">
+          <h3 class="card-title">Reproduce it</h3>
+<pre class="term">git clone https://github.com/ShermaineYap/IBM-BOB2-HACK && cd IBM-BOB2-HACK
+npm install
 
-      <!-- TAB 4: EVIDENCE -->
-      <section id="tab-sessions" class="tab-pane">
-        <div class="panel-header">
-          <div class="panel-title-wrap">
-            <h2>Bob task session evidence</h2>
-            <p>Every PNG in <code>bob_sessions/</code> is a screenshot of a Bob IDE task session consumption summary, captured right after the task ran. This page lists whatever is in that folder — nothing is hand-entered.</p>
-          </div>
-          <div class="panel-tags"><span class="tag tag-mandatory">Mandatory deliverable</span></div>
-        </div>
-        <div class="session-gallery-grid" id="session-gallery"></div>
-        <p class="vuln-desc" id="session-empty" hidden>No screenshots yet. See <code>bob_sessions/README.md</code> for how to capture them.</p>
-      </section>
+# In Bob IDE, 🛡️ Security Auditor mode:
+#   Run the security-audit skill on ledger_app/, write audit/hard/findings.json
+#   Run the generate-fixes skill on audit/hard/findings.json
 
-    </main>
-  </div>
+node scripts/score_audit.mjs audit/hard   # recall, precision, decoy hits, fixes that apply
+node scripts/to_sarif.mjs audit/hard      # SARIF 2.1.0 for GitHub code scanning
+npm run dev                               # this dashboard</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= EVIDENCE ================= -->
+    <section id="tab-evidence" class="pane" role="tabpanel">
+      <div class="wrap section">
+        <div class="section-head">
+          <h2>Bob task session evidence</h2>
+          <p class="muted">Every Bob IDE task behind this project, with its session consumption summary. Screenshots are listed straight from <code>bob_sessions/</code>.</p>
+        </div>
+        <div class="table-wrap card"><table class="runs" id="runs-table"></table></div>
+        <div class="gallery" id="gallery"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot-inner">
+      <span>DevPulse · IBM Bob 2.0 Hackathon, Sep 2026 · Shermaine Yap &amp; Caiting</span>
+      <span><a href="https://github.com/ShermaineYap/IBM-BOB2-HACK" target="_blank" rel="noopener">Source (MIT)</a></span>
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lightbox" hidden><img alt="" /><button class="btn btn-ghost btn-sm" aria-label="Close">Close ✕</button></div>
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>
